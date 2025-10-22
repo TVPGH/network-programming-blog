@@ -1,4 +1,4 @@
-baseURL = 'https://example.org'
+baseURL = 'https://tvpgh.github.io/network-programming-blog/'
 languageCode = 'vi'
 title = 'Network Programming Blog'
 theme = 'minimal-theme'
