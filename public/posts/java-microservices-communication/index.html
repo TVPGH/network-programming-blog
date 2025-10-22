@@ -1,293 +1,403 @@
-<!doctype html><html lang=vi><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Giao Tiếp Giữa Các Microservices với Java - Network Programming Blog</title><meta name=description content="Blog cá nhân về lập trình mạng với Java & JavaScript"><link rel=stylesheet href=../../css/style.css><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body><header class=site-header><div class=container><div class=header-content><div class=site-logo><a href=https://tvpgh.github.io/network-programming-blog/><h1>Network Programming Blog</h1></a></div><nav class=main-nav><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></nav></div></div></header><main class=main-content><div class=container><article class=post><header class=post-header><h1 class=post-title>Giao Tiếp Giữa Các Microservices với Java</h1><div class=post-meta><time datetime=2024-02-25>25/2/2024</time>
-<span class=tag>Java</span>
-<span class=tag>Microservices</span>
-<span class=tag>Communication</span>
-<span class=tag>Spring Cloud</span>
-<span class=tag>Distributed Systems</span></div></header><div class=post-content><p>Microservices architecture yêu cầu các service giao tiếp với nhau một cách hiệu quả. Trong bài viết này, chúng ta sẽ tìm hiểu các phương pháp giao tiếp giữa microservices.</p><h2 id=các-phương-pháp-giao-tiếp>Các phương pháp giao tiếp</h2><h3 id=1-synchronous-communication-httprest>1. Synchronous Communication (HTTP/REST)</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// User Service</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RestController</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RequestMapping</span>(<span style=color:#e6db74>&#34;/api/users&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>UserController</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> UserService userService;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@GetMapping</span>(<span style=color:#e6db74>&#34;/{id}&#34;</span>)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> ResponseEntity<span style=color:#f92672>&lt;</span>User<span style=color:#f92672>&gt;</span> <span style=color:#a6e22e>getUser</span>(<span style=color:#a6e22e>@PathVariable</span> Long id) {
-</span></span><span style=display:flex><span>        User user <span style=color:#f92672>=</span> userService.<span style=color:#a6e22e>findById</span>(id);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> ResponseEntity.<span style=color:#a6e22e>ok</span>(user);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Order Service</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Service</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderService</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> RestTemplate restTemplate;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Order <span style=color:#a6e22e>createOrder</span>(OrderRequest request) {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Gọi User Service để lấy thông tin user</span>
-</span></span><span style=display:flex><span>        String userServiceUrl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://user-service/api/users/&#34;</span> <span style=color:#f92672>+</span> request.<span style=color:#a6e22e>getUserId</span>();
-</span></span><span style=display:flex><span>        User user <span style=color:#f92672>=</span> restTemplate.<span style=color:#a6e22e>getForObject</span>(userServiceUrl, User.<span style=color:#a6e22e>class</span>);
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (user <span style=color:#f92672>==</span> <span style=color:#66d9ef>null</span>) {
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> UserNotFoundException(<span style=color:#e6db74>&#34;User not found&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Tạo order</span>
-</span></span><span style=display:flex><span>        Order order <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Order();
-</span></span><span style=display:flex><span>        order.<span style=color:#a6e22e>setUserId</span>(user.<span style=color:#a6e22e>getId</span>());
-</span></span><span style=display:flex><span>        order.<span style=color:#a6e22e>setUserEmail</span>(user.<span style=color:#a6e22e>getEmail</span>());
-</span></span><span style=display:flex><span>        order.<span style=color:#a6e22e>setItems</span>(request.<span style=color:#a6e22e>getItems</span>());
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> orderRepository.<span style=color:#a6e22e>save</span>(order);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=2-asynchronous-communication-message-queues>2. Asynchronous Communication (Message Queues)</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Message Publisher</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Component</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderEventPublisher</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> RabbitTemplate rabbitTemplate;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>publishOrderCreated</span>(Order order) {
-</span></span><span style=display:flex><span>        OrderCreatedEvent event <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> OrderCreatedEvent();
-</span></span><span style=display:flex><span>        event.<span style=color:#a6e22e>setOrderId</span>(order.<span style=color:#a6e22e>getId</span>());
-</span></span><span style=display:flex><span>        event.<span style=color:#a6e22e>setUserId</span>(order.<span style=color:#a6e22e>getUserId</span>());
-</span></span><span style=display:flex><span>        event.<span style=color:#a6e22e>setTotalAmount</span>(order.<span style=color:#a6e22e>getTotalAmount</span>());
-</span></span><span style=display:flex><span>        event.<span style=color:#a6e22e>setTimestamp</span>(LocalDateTime.<span style=color:#a6e22e>now</span>());
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        rabbitTemplate.<span style=color:#a6e22e>convertAndSend</span>(<span style=color:#e6db74>&#34;order.exchange&#34;</span>, <span style=color:#e6db74>&#34;order.created&#34;</span>, event);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Message Consumer</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Component</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RabbitListener</span>(queues <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;order.created.queue&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderEventHandler</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> NotificationService notificationService;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> InventoryService inventoryService;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>handleOrderCreated</span>(OrderCreatedEvent event) {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Gửi email thông báo</span>
-</span></span><span style=display:flex><span>        notificationService.<span style=color:#a6e22e>sendOrderConfirmation</span>(event.<span style=color:#a6e22e>getUserId</span>(), event.<span style=color:#a6e22e>getOrderId</span>());
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Cập nhật inventory</span>
-</span></span><span style=display:flex><span>        inventoryService.<span style=color:#a6e22e>reserveItems</span>(event.<span style=color:#a6e22e>getOrderId</span>());
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=3-service-discovery-với-eureka>3. Service Discovery với Eureka</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Eureka Client Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@SpringBootApplication</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@EnableEurekaClient</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderServiceApplication</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span>(String<span style=color:#f92672>[]</span> args) {
-</span></span><span style=display:flex><span>        SpringApplication.<span style=color:#a6e22e>run</span>(OrderServiceApplication.<span style=color:#a6e22e>class</span>, args);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Service Discovery</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Service</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>UserServiceClient</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> DiscoveryClient discoveryClient;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> RestTemplate restTemplate;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> User <span style=color:#a6e22e>getUserById</span>(Long userId) {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Tìm service instance</span>
-</span></span><span style=display:flex><span>        List<span style=color:#f92672>&lt;</span>ServiceInstance<span style=color:#f92672>&gt;</span> instances <span style=color:#f92672>=</span> discoveryClient.<span style=color:#a6e22e>getInstances</span>(<span style=color:#e6db74>&#34;user-service&#34;</span>);
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (instances.<span style=color:#a6e22e>isEmpty</span>()) {
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>throw</span> <span style=color:#66d9ef>new</span> ServiceUnavailableException(<span style=color:#e6db74>&#34;User service not available&#34;</span>);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Chọn instance đầu tiên (có thể implement load balancing)</span>
-</span></span><span style=display:flex><span>        ServiceInstance instance <span style=color:#f92672>=</span> instances.<span style=color:#a6e22e>get</span>(0);
-</span></span><span style=display:flex><span>        String url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://&#34;</span> <span style=color:#f92672>+</span> instance.<span style=color:#a6e22e>getHost</span>() <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;:&#34;</span> <span style=color:#f92672>+</span> instance.<span style=color:#a6e22e>getPort</span>() <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;/api/users/&#34;</span> <span style=color:#f92672>+</span> userId;
-</span></span><span style=display:flex><span>        
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> restTemplate.<span style=color:#a6e22e>getForObject</span>(url, User.<span style=color:#a6e22e>class</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=4-api-gateway-với-spring-cloud-gateway>4. API Gateway với Spring Cloud Gateway</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Gateway Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>GatewayConfig</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Bean</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> RouteLocator <span style=color:#a6e22e>customRouteLocator</span>(RouteLocatorBuilder builder) {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> builder.<span style=color:#a6e22e>routes</span>()
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>route</span>(<span style=color:#e6db74>&#34;user-service&#34;</span>, r <span style=color:#f92672>-&gt;</span> r.<span style=color:#a6e22e>path</span>(<span style=color:#e6db74>&#34;/api/users/**&#34;</span>)
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>filters</span>(f <span style=color:#f92672>-&gt;</span> f.<span style=color:#a6e22e>stripPrefix</span>(2))
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>uri</span>(<span style=color:#e6db74>&#34;lb://user-service&#34;</span>))
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>route</span>(<span style=color:#e6db74>&#34;order-service&#34;</span>, r <span style=color:#f92672>-&gt;</span> r.<span style=color:#a6e22e>path</span>(<span style=color:#e6db74>&#34;/api/orders/**&#34;</span>)
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>filters</span>(f <span style=color:#f92672>-&gt;</span> f.<span style=color:#a6e22e>stripPrefix</span>(2))
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>uri</span>(<span style=color:#e6db74>&#34;lb://order-service&#34;</span>))
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>route</span>(<span style=color:#e6db74>&#34;payment-service&#34;</span>, r <span style=color:#f92672>-&gt;</span> r.<span style=color:#a6e22e>path</span>(<span style=color:#e6db74>&#34;/api/payments/**&#34;</span>)
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>filters</span>(f <span style=color:#f92672>-&gt;</span> f.<span style=color:#a6e22e>stripPrefix</span>(2))
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>uri</span>(<span style=color:#e6db74>&#34;lb://payment-service&#34;</span>))
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>build</span>();
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Bean</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> GlobalFilter <span style=color:#a6e22e>customGlobalFilter</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> (exchange, chain) <span style=color:#f92672>-&gt;</span> {
-</span></span><span style=display:flex><span>            ServerHttpRequest request <span style=color:#f92672>=</span> exchange.<span style=color:#a6e22e>getRequest</span>();
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// Thêm correlation ID</span>
-</span></span><span style=display:flex><span>            String correlationId <span style=color:#f92672>=</span> UUID.<span style=color:#a6e22e>randomUUID</span>().<span style=color:#a6e22e>toString</span>();
-</span></span><span style=display:flex><span>            ServerHttpRequest mutatedRequest <span style=color:#f92672>=</span> request.<span style=color:#a6e22e>mutate</span>()
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>header</span>(<span style=color:#e6db74>&#34;X-Correlation-ID&#34;</span>, correlationId)
-</span></span><span style=display:flex><span>                .<span style=color:#a6e22e>build</span>();
-</span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> chain.<span style=color:#a6e22e>filter</span>(exchange.<span style=color:#a6e22e>mutate</span>().<span style=color:#a6e22e>request</span>(mutatedRequest).<span style=color:#a6e22e>build</span>());
-</span></span><span style=display:flex><span>        };
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=5-circuit-breaker-với-hystrix>5. Circuit Breaker với Hystrix</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Circuit Breaker Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>HystrixConfig</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Bean</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> HystrixCommandAspect <span style=color:#a6e22e>hystrixCommandAspect</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>new</span> HystrixCommandAspect();
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Service với Circuit Breaker</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Service</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>UserServiceClient</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@HystrixCommand</span>(fallbackMethod <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;getUserFallback&#34;</span>)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> User <span style=color:#a6e22e>getUserById</span>(Long userId) {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Gọi external service</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> restTemplate.<span style=color:#a6e22e>getForObject</span>(<span style=color:#e6db74>&#34;/api/users/&#34;</span> <span style=color:#f92672>+</span> userId, User.<span style=color:#a6e22e>class</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> User <span style=color:#a6e22e>getUserFallback</span>(Long userId) {
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Fallback method</span>
-</span></span><span style=display:flex><span>        User fallbackUser <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> User();
-</span></span><span style=display:flex><span>        fallbackUser.<span style=color:#a6e22e>setId</span>(userId);
-</span></span><span style=display:flex><span>        fallbackUser.<span style=color:#a6e22e>setName</span>(<span style=color:#e6db74>&#34;Unknown User&#34;</span>);
-</span></span><span style=display:flex><span>        fallbackUser.<span style=color:#a6e22e>setEmail</span>(<span style=color:#e6db74>&#34;unknown@example.com&#34;</span>);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> fallbackUser;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=6-distributed-tracing-với-sleuth>6. Distributed Tracing với Sleuth</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Configuration</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>SleuthConfig</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Bean</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Sampler <span style=color:#a6e22e>alwaysSampler</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> Sampler.<span style=color:#a6e22e>create</span>(1.<span style=color:#a6e22e>0f</span>);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Service với Tracing</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Service</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderService</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> Tracer tracer;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> Order <span style=color:#a6e22e>processOrder</span>(OrderRequest request) {
-</span></span><span style=display:flex><span>        Span span <span style=color:#f92672>=</span> tracer.<span style=color:#a6e22e>nextSpan</span>()
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>name</span>(<span style=color:#e6db74>&#34;process-order&#34;</span>)
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>tag</span>(<span style=color:#e6db74>&#34;order.id&#34;</span>, request.<span style=color:#a6e22e>getOrderId</span>())
-</span></span><span style=display:flex><span>            .<span style=color:#a6e22e>start</span>();
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> (Tracer.<span style=color:#a6e22e>SpanInScope</span> ws <span style=color:#f92672>=</span> tracer.<span style=color:#a6e22e>withSpanInScope</span>(span)) {
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// Xử lý order</span>
-</span></span><span style=display:flex><span>            Order order <span style=color:#f92672>=</span> createOrder(request);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// Gọi các service khác</span>
-</span></span><span style=display:flex><span>            updateInventory(order);
-</span></span><span style=display:flex><span>            sendNotification(order);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> order;
-</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>finally</span> {
-</span></span><span style=display:flex><span>            span.<span style=color:#a6e22e>end</span>();
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=7-event-sourcing>7. Event Sourcing</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Event Store</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@Component</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>EventStore</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> JdbcTemplate jdbcTemplate;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>saveEvent</span>(DomainEvent event) {
-</span></span><span style=display:flex><span>        String sql <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;INSERT INTO events (aggregate_id, event_type, event_data, timestamp) VALUES (?, ?, ?, ?)&#34;</span>;
-</span></span><span style=display:flex><span>        jdbcTemplate.<span style=color:#a6e22e>update</span>(sql, 
-</span></span><span style=display:flex><span>            event.<span style=color:#a6e22e>getAggregateId</span>(), 
-</span></span><span style=display:flex><span>            event.<span style=color:#a6e22e>getEventType</span>(), 
-</span></span><span style=display:flex><span>            event.<span style=color:#a6e22e>getEventData</span>(), 
-</span></span><span style=display:flex><span>            event.<span style=color:#a6e22e>getTimestamp</span>());
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> List<span style=color:#f92672>&lt;</span>DomainEvent<span style=color:#f92672>&gt;</span> <span style=color:#a6e22e>getEvents</span>(String aggregateId) {
-</span></span><span style=display:flex><span>        String sql <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;SELECT * FROM events WHERE aggregate_id = ? ORDER BY timestamp&#34;</span>;
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> jdbcTemplate.<span style=color:#a6e22e>query</span>(sql, <span style=color:#66d9ef>new</span> Object<span style=color:#f92672>[]</span>{aggregateId}, <span style=color:#66d9ef>new</span> EventRowMapper());
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Aggregate Root</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Order</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> String id;
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> List<span style=color:#f92672>&lt;</span>DomainEvent<span style=color:#f92672>&gt;</span> uncommittedEvents <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ArrayList<span style=color:#f92672>&lt;&gt;</span>();
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>createOrder</span>(OrderRequest request) {
-</span></span><span style=display:flex><span>        OrderCreatedEvent event <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> OrderCreatedEvent(id, request);
-</span></span><span style=display:flex><span>        apply(event);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>apply</span>(DomainEvent event) {
-</span></span><span style=display:flex><span>        uncommittedEvents.<span style=color:#a6e22e>add</span>(event);
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// Apply event to aggregate state</span>
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> List<span style=color:#f92672>&lt;</span>DomainEvent<span style=color:#f92672>&gt;</span> <span style=color:#a6e22e>getUncommittedEvents</span>() {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> uncommittedEvents;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=8-cqrs-pattern>8. CQRS Pattern</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#75715e>// Command Side</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RestController</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RequestMapping</span>(<span style=color:#e6db74>&#34;/api/orders&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderCommandController</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> OrderCommandService orderCommandService;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@PostMapping</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> ResponseEntity<span style=color:#f92672>&lt;</span>Order<span style=color:#f92672>&gt;</span> <span style=color:#a6e22e>createOrder</span>(<span style=color:#a6e22e>@RequestBody</span> CreateOrderCommand command) {
-</span></span><span style=display:flex><span>        Order order <span style=color:#f92672>=</span> orderCommandService.<span style=color:#a6e22e>createOrder</span>(command);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> ResponseEntity.<span style=color:#a6e22e>ok</span>(order);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// Query Side</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RestController</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@RequestMapping</span>(<span style=color:#e6db74>&#34;/api/orders&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>OrderQueryController</span> {
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@Autowired</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> OrderQueryService orderQueryService;
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@GetMapping</span>(<span style=color:#e6db74>&#34;/{id}&#34;</span>)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> ResponseEntity<span style=color:#f92672>&lt;</span>OrderView<span style=color:#f92672>&gt;</span> <span style=color:#a6e22e>getOrder</span>(<span style=color:#a6e22e>@PathVariable</span> String id) {
-</span></span><span style=display:flex><span>        OrderView order <span style=color:#f92672>=</span> orderQueryService.<span style=color:#a6e22e>getOrder</span>(id);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> ResponseEntity.<span style=color:#a6e22e>ok</span>(order);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>@GetMapping</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> ResponseEntity<span style=color:#f92672>&lt;</span>List<span style=color:#f92672>&lt;</span>OrderView<span style=color:#f92672>&gt;&gt;</span> <span style=color:#a6e22e>getOrders</span>(<span style=color:#a6e22e>@RequestParam</span> String userId) {
-</span></span><span style=display:flex><span>        List<span style=color:#f92672>&lt;</span>OrderView<span style=color:#f92672>&gt;</span> orders <span style=color:#f92672>=</span> orderQueryService.<span style=color:#a6e22e>getOrdersByUser</span>(userId);
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> ResponseEntity.<span style=color:#a6e22e>ok</span>(orders);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=kết-luận>Kết luận</h2><p>Giao tiếp giữa các microservices là một thách thức phức tạp. Việc lựa chọn phương pháp giao tiếp phù hợp phụ thuộc vào yêu cầu cụ thể của hệ thống. Synchronous communication phù hợp cho các tương tác real-time, trong khi asynchronous communication phù hợp cho các tương tác không cần phản hồi ngay lập tức.</p></div><nav class=post-nav><a href=../../posts/javascript-nodejs-express-api/ class=prev-post>← Xây Dựng REST API với Node.js và Express</a></nav></article></div></main><footer class=site-footer><div class=container><div class=footer-content><div class=footer-info><h3>Network Programming Blog</h3><p>Blog cá nhân về lập trình mạng với Java & JavaScript</p></div><div class=footer-links><h4>Liên kết</h4><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></div><div class=footer-contact><h4>Liên hệ</h4><p>Email: contact@example.com</p><p>GitHub: github.com/username</p></div></div><div class=footer-bottom><p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p></div></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/network-programming-blog/livereload.js?mindelay=10&amp;v=2&amp;port=55875&amp;path=network-programming-blog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao Tiếp Giữa Các Microservices với Java - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:55875/network-programming-blog/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <article class="post">
+        <header class="post-header">
+            <h1 class="post-title">Giao Tiếp Giữa Các Microservices với Java</h1>
+            <div class="post-meta">
+                <time datetime="2024-02-25">25/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Microservices</span>
+                
+                <span class="tag">Communication</span>
+                
+                <span class="tag">Spring Cloud</span>
+                
+                <span class="tag">Distributed Systems</span>
+                
+            </div>
+        </header>
+        
+        <div class="post-content">
+            <p>Microservices architecture yêu cầu các service giao tiếp với nhau một cách hiệu quả. Trong bài viết này, chúng ta sẽ tìm hiểu các phương pháp giao tiếp giữa microservices.</p>
+<h2 id="các-phương-pháp-giao-tiếp">Các phương pháp giao tiếp</h2>
+<h3 id="1-synchronous-communication-httprest">1. Synchronous Communication (HTTP/REST)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// User Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/users&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> UserService userService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getUser</span>(<span style="color:#a6e22e">@PathVariable</span> Long id) {
+</span></span><span style="display:flex;"><span>        User user <span style="color:#f92672">=</span> userService.<span style="color:#a6e22e">findById</span>(id);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(user);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Order Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RestTemplate restTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Order <span style="color:#a6e22e">createOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gọi User Service để lấy thông tin user</span>
+</span></span><span style="display:flex;"><span>        String userServiceUrl <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://user-service/api/users/&#34;</span> <span style="color:#f92672">+</span> request.<span style="color:#a6e22e">getUserId</span>();
+</span></span><span style="display:flex;"><span>        User user <span style="color:#f92672">=</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(userServiceUrl, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (user <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UserNotFoundException(<span style="color:#e6db74">&#34;User not found&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo order</span>
+</span></span><span style="display:flex;"><span>        Order order <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Order();
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setUserId</span>(user.<span style="color:#a6e22e">getId</span>());
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setUserEmail</span>(user.<span style="color:#a6e22e">getEmail</span>());
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setItems</span>(request.<span style="color:#a6e22e">getItems</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> orderRepository.<span style="color:#a6e22e">save</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="2-asynchronous-communication-message-queues">2. Asynchronous Communication (Message Queues)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Message Publisher</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderEventPublisher</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RabbitTemplate rabbitTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">publishOrderCreated</span>(Order order) {
+</span></span><span style="display:flex;"><span>        OrderCreatedEvent event <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OrderCreatedEvent();
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setOrderId</span>(order.<span style="color:#a6e22e">getId</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setUserId</span>(order.<span style="color:#a6e22e">getUserId</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setTotalAmount</span>(order.<span style="color:#a6e22e">getTotalAmount</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setTimestamp</span>(LocalDateTime.<span style="color:#a6e22e">now</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        rabbitTemplate.<span style="color:#a6e22e">convertAndSend</span>(<span style="color:#e6db74">&#34;order.exchange&#34;</span>, <span style="color:#e6db74">&#34;order.created&#34;</span>, event);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Message Consumer</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RabbitListener</span>(queues <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;order.created.queue&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderEventHandler</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> NotificationService notificationService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> InventoryService inventoryService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleOrderCreated</span>(OrderCreatedEvent event) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gửi email thông báo</span>
+</span></span><span style="display:flex;"><span>        notificationService.<span style="color:#a6e22e">sendOrderConfirmation</span>(event.<span style="color:#a6e22e">getUserId</span>(), event.<span style="color:#a6e22e">getOrderId</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Cập nhật inventory</span>
+</span></span><span style="display:flex;"><span>        inventoryService.<span style="color:#a6e22e">reserveItems</span>(event.<span style="color:#a6e22e">getOrderId</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="3-service-discovery-với-eureka">3. Service Discovery với Eureka</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Eureka Client Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@SpringBootApplication</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@EnableEurekaClient</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderServiceApplication</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        SpringApplication.<span style="color:#a6e22e">run</span>(OrderServiceApplication.<span style="color:#a6e22e">class</span>, args);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service Discovery</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceClient</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> DiscoveryClient discoveryClient;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RestTemplate restTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserById</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tìm service instance</span>
+</span></span><span style="display:flex;"><span>        List<span style="color:#f92672">&lt;</span>ServiceInstance<span style="color:#f92672">&gt;</span> instances <span style="color:#f92672">=</span> discoveryClient.<span style="color:#a6e22e">getInstances</span>(<span style="color:#e6db74">&#34;user-service&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (instances.<span style="color:#a6e22e">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ServiceUnavailableException(<span style="color:#e6db74">&#34;User service not available&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Chọn instance đầu tiên (có thể implement load balancing)</span>
+</span></span><span style="display:flex;"><span>        ServiceInstance instance <span style="color:#f92672">=</span> instances.<span style="color:#a6e22e">get</span>(0);
+</span></span><span style="display:flex;"><span>        String url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://&#34;</span> <span style="color:#f92672">+</span> instance.<span style="color:#a6e22e">getHost</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;:&#34;</span> <span style="color:#f92672">+</span> instance.<span style="color:#a6e22e">getPort</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/api/users/&#34;</span> <span style="color:#f92672">+</span> userId;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(url, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4-api-gateway-với-spring-cloud-gateway">4. API Gateway với Spring Cloud Gateway</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Gateway Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GatewayConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> RouteLocator <span style="color:#a6e22e">customRouteLocator</span>(RouteLocatorBuilder builder) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> builder.<span style="color:#a6e22e">routes</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;user-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/users/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://user-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;order-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/orders/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://order-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;payment-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/payments/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://payment-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> GlobalFilter <span style="color:#a6e22e">customGlobalFilter</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (exchange, chain) <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            ServerHttpRequest request <span style="color:#f92672">=</span> exchange.<span style="color:#a6e22e">getRequest</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Thêm correlation ID</span>
+</span></span><span style="display:flex;"><span>            String correlationId <span style="color:#f92672">=</span> UUID.<span style="color:#a6e22e">randomUUID</span>().<span style="color:#a6e22e">toString</span>();
+</span></span><span style="display:flex;"><span>            ServerHttpRequest mutatedRequest <span style="color:#f92672">=</span> request.<span style="color:#a6e22e">mutate</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;X-Correlation-ID&#34;</span>, correlationId)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> chain.<span style="color:#a6e22e">filter</span>(exchange.<span style="color:#a6e22e">mutate</span>().<span style="color:#a6e22e">request</span>(mutatedRequest).<span style="color:#a6e22e">build</span>());
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="5-circuit-breaker-với-hystrix">5. Circuit Breaker với Hystrix</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Circuit Breaker Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HystrixConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> HystrixCommandAspect <span style="color:#a6e22e">hystrixCommandAspect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> HystrixCommandAspect();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service với Circuit Breaker</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceClient</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@HystrixCommand</span>(fallbackMethod <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;getUserFallback&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserById</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gọi external service</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(<span style="color:#e6db74">&#34;/api/users/&#34;</span> <span style="color:#f92672">+</span> userId, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserFallback</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Fallback method</span>
+</span></span><span style="display:flex;"><span>        User fallbackUser <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User();
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setId</span>(userId);
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setName</span>(<span style="color:#e6db74">&#34;Unknown User&#34;</span>);
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setEmail</span>(<span style="color:#e6db74">&#34;unknown@example.com&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> fallbackUser;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="6-distributed-tracing-với-sleuth">6. Distributed Tracing với Sleuth</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SleuthConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Sampler <span style="color:#a6e22e">alwaysSampler</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Sampler.<span style="color:#a6e22e">create</span>(1.<span style="color:#a6e22e">0f</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service với Tracing</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Tracer tracer;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Order <span style="color:#a6e22e">processOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        Span span <span style="color:#f92672">=</span> tracer.<span style="color:#a6e22e">nextSpan</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#34;process-order&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">tag</span>(<span style="color:#e6db74">&#34;order.id&#34;</span>, request.<span style="color:#a6e22e">getOrderId</span>())
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (Tracer.<span style="color:#a6e22e">SpanInScope</span> ws <span style="color:#f92672">=</span> tracer.<span style="color:#a6e22e">withSpanInScope</span>(span)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Xử lý order</span>
+</span></span><span style="display:flex;"><span>            Order order <span style="color:#f92672">=</span> createOrder(request);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gọi các service khác</span>
+</span></span><span style="display:flex;"><span>            updateInventory(order);
+</span></span><span style="display:flex;"><span>            sendNotification(order);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> order;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            span.<span style="color:#a6e22e">end</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="7-event-sourcing">7. Event Sourcing</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Event Store</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EventStore</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> JdbcTemplate jdbcTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">saveEvent</span>(DomainEvent event) {
+</span></span><span style="display:flex;"><span>        String sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;INSERT INTO events (aggregate_id, event_type, event_data, timestamp) VALUES (?, ?, ?, ?)&#34;</span>;
+</span></span><span style="display:flex;"><span>        jdbcTemplate.<span style="color:#a6e22e">update</span>(sql, 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getAggregateId</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getEventType</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getEventData</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getTimestamp</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getEvents</span>(String aggregateId) {
+</span></span><span style="display:flex;"><span>        String sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SELECT * FROM events WHERE aggregate_id = ? ORDER BY timestamp&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> jdbcTemplate.<span style="color:#a6e22e">query</span>(sql, <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]</span>{aggregateId}, <span style="color:#66d9ef">new</span> EventRowMapper());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Aggregate Root</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Order</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String id;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> uncommittedEvents <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">createOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        OrderCreatedEvent event <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OrderCreatedEvent(id, request);
+</span></span><span style="display:flex;"><span>        apply(event);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">apply</span>(DomainEvent event) {
+</span></span><span style="display:flex;"><span>        uncommittedEvents.<span style="color:#a6e22e">add</span>(event);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Apply event to aggregate state</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getUncommittedEvents</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> uncommittedEvents;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="8-cqrs-pattern">8. CQRS Pattern</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Command Side</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/orders&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderCommandController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> OrderCommandService orderCommandService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@PostMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>Order<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createOrder</span>(<span style="color:#a6e22e">@RequestBody</span> CreateOrderCommand command) {
+</span></span><span style="display:flex;"><span>        Order order <span style="color:#f92672">=</span> orderCommandService.<span style="color:#a6e22e">createOrder</span>(command);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Query Side</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/orders&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderQueryController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> OrderQueryService orderQueryService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getOrder</span>(<span style="color:#a6e22e">@PathVariable</span> String id) {
+</span></span><span style="display:flex;"><span>        OrderView order <span style="color:#f92672">=</span> orderQueryService.<span style="color:#a6e22e">getOrder</span>(id);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">getOrders</span>(<span style="color:#a6e22e">@RequestParam</span> String userId) {
+</span></span><span style="display:flex;"><span>        List<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;</span> orders <span style="color:#f92672">=</span> orderQueryService.<span style="color:#a6e22e">getOrdersByUser</span>(userId);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(orders);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Giao tiếp giữa các microservices là một thách thức phức tạp. Việc lựa chọn phương pháp giao tiếp phù hợp phụ thuộc vào yêu cầu cụ thể của hệ thống. Synchronous communication phù hợp cho các tương tác real-time, trong khi asynchronous communication phù hợp cho các tương tác không cần phản hồi ngay lập tức.</p>
+
+        </div>
+        
+        <nav class="post-nav">
+            
+            <a href="../../posts/javascript-nodejs-express-api/" class="prev-post">← Xây Dựng REST API với Node.js và Express</a>
+            
+            
+        </nav>
+    </article>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: truongvinhphuc05112004@gmail.com</p>
+                <p>GitHub: github.com/TVPGH</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
+

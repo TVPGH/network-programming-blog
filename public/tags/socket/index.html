@@ -1,72 +1,174 @@
-<!doctype html><html lang=vi><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Socket - Network Programming Blog</title><meta name=description content="Blog cá nhân về lập trình mạng với Java & JavaScript"><link rel=stylesheet href=../../css/style.css><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body><header class=site-header><div class=container><div class=header-content><div class=site-logo><a href=https://tvpgh.github.io/network-programming-blog/><h1>Network Programming Blog</h1></a></div><nav class=main-nav><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></nav></div></div></header><main class=main-content><div class=container><div class=blog-header><h1>Socket</h1><p class=blog-description>Khám phá các bài viết về lập trình mạng với Java & JavaScript</p></div><div class=posts-grid><article class=post-card><div class=post-meta><time datetime=2024-01-15>15/1/2024</time>
-<span class=tag>Java</span>
-<span class=tag>Socket</span>
-<span class=tag>Network Programming</span></div><h2 class=post-title><a href=../../posts/java-socket-programming-basics/>Lập Trình Socket với Java - Cơ Bản</a></h2><p class=post-excerpt><p>Lập trình socket là một trong những kỹ năng cơ bản nhất trong lập trình mạng. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Java để tạo các ứng dụng client-server đơn giản.</p><h2 id=socket-là-gì>Socket là gì?</h2><p>Socket là một endpoint của kết nối hai chiều giữa hai chương trình chạy trên mạng. Nó được xác định bởi địa chỉ IP và số port.</p><h2 id=tạo-server-socket>Tạo Server Socket</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#f92672>import</span> java.io.*;
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.net.*;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Server</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span>(String<span style=color:#f92672>[]</span> args) {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> {
-</span></span><span style=display:flex><span>            ServerSocket serverSocket <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> ServerSocket(8080);
-</span></span><span style=display:flex><span>            System.<span style=color:#a6e22e>out</span>.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Server đang chạy trên port 8080...&#34;</span>);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> (<span style=color:#66d9ef>true</span>) {
-</span></span><span style=display:flex><span>                Socket clientSocket <span style=color:#f92672>=</span> serverSocket.<span style=color:#a6e22e>accept</span>();
-</span></span><span style=display:flex><span>                System.<span style=color:#a6e22e>out</span>.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Client đã kết nối: &#34;</span> <span style=color:#f92672>+</span> clientSocket.<span style=color:#a6e22e>getInetAddress</span>());
-</span></span><span style=display:flex><span>                
-</span></span><span style=display:flex><span>                <span style=color:#75715e>// Xử lý client trong thread riêng</span>
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>new</span> Thread(() <span style=color:#f92672>-&gt;</span> handleClient(clientSocket)).<span style=color:#a6e22e>start</span>();
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>catch</span> (IOException e) {
-</span></span><span style=display:flex><span>            e.<span style=color:#a6e22e>printStackTrace</span>();
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>handleClient</span>(Socket clientSocket) {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> {
-</span></span><span style=display:flex><span>            BufferedReader in <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> BufferedReader(
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>new</span> InputStreamReader(clientSocket.<span style=color:#a6e22e>getInputStream</span>())
-</span></span><span style=display:flex><span>            );
-</span></span><span style=display:flex><span>            PrintWriter out <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> PrintWriter(
-</span></span><span style=display:flex><span>                clientSocket.<span style=color:#a6e22e>getOutputStream</span>(), <span style=color:#66d9ef>true</span>
-</span></span><span style=display:flex><span>            );
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            String inputLine;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>while</span> ((inputLine <span style=color:#f92672>=</span> in.<span style=color:#a6e22e>readLine</span>()) <span style=color:#f92672>!=</span> <span style=color:#66d9ef>null</span>) {
-</span></span><span style=display:flex><span>                System.<span style=color:#a6e22e>out</span>.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Nhận từ client: &#34;</span> <span style=color:#f92672>+</span> inputLine);
-</span></span><span style=display:flex><span>                out.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Server phản hồi: &#34;</span> <span style=color:#f92672>+</span> inputLine);
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>catch</span> (IOException e) {
-</span></span><span style=display:flex><span>            e.<span style=color:#a6e22e>printStackTrace</span>();
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=tạo-client-socket>Tạo Client Socket</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#f92672>import</span> java.io.*;
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> java.net.*;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span> <span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Client</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>main</span>(String<span style=color:#f92672>[]</span> args) {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>try</span> {
-</span></span><span style=display:flex><span>            Socket socket <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> Socket(<span style=color:#e6db74>&#34;localhost&#34;</span>, 8080);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            BufferedReader in <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> BufferedReader(
-</span></span><span style=display:flex><span>                <span style=color:#66d9ef>new</span> InputStreamReader(socket.<span style=color:#a6e22e>getInputStream</span>())
-</span></span><span style=display:flex><span>            );
-</span></span><span style=display:flex><span>            PrintWriter out <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> PrintWriter(
-</span></span><span style=display:flex><span>                socket.<span style=color:#a6e22e>getOutputStream</span>(), <span style=color:#66d9ef>true</span>
-</span></span><span style=display:flex><span>            );
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// Gửi tin nhắn</span>
-</span></span><span style=display:flex><span>            out.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Xin chào server!&#34;</span>);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            <span style=color:#75715e>// Nhận phản hồi</span>
-</span></span><span style=display:flex><span>            String response <span style=color:#f92672>=</span> in.<span style=color:#a6e22e>readLine</span>();
-</span></span><span style=display:flex><span>            System.<span style=color:#a6e22e>out</span>.<span style=color:#a6e22e>println</span>(<span style=color:#e6db74>&#34;Server phản hồi: &#34;</span> <span style=color:#f92672>+</span> response);
-</span></span><span style=display:flex><span>            
-</span></span><span style=display:flex><span>            socket.<span style=color:#a6e22e>close</span>();
-</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>catch</span> (IOException e) {
-</span></span><span style=display:flex><span>            e.<span style=color:#a6e22e>printStackTrace</span>();
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=kết-luận>Kết luận</h2><p>Lập trình socket với Java cho phép chúng ta tạo ra các ứng dụng mạng mạnh mẽ. Việc hiểu rõ cách hoạt động của socket sẽ giúp bạn phát triển các ứng dụng client-server hiệu quả.</p></p><a href=../../posts/java-socket-programming-basics/ class=read-more>Đọc thêm →</a></article></div></div></main><footer class=site-footer><div class=container><div class=footer-content><div class=footer-info><h3>Network Programming Blog</h3><p>Blog cá nhân về lập trình mạng với Java & JavaScript</p></div><div class=footer-links><h4>Liên kết</h4><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></div><div class=footer-contact><h4>Liên hệ</h4><p>Email: contact@example.com</p><p>GitHub: github.com/username</p></div></div><div class=footer-bottom><p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p></div></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/network-programming-blog/livereload.js?mindelay=10&amp;v=2&amp;port=55875&amp;path=network-programming-blog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:55875/network-programming-blog/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <div class="blog-header">
+        <h1>Socket</h1>
+        <p class="blog-description">Khám phá các bài viết về lập trình mạng với Java & JavaScript</p>
+    </div>
+    
+    <div class="posts-grid">
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-01-15">15/1/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Socket</span>
+                
+                <span class="tag">Network Programming</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="../../posts/java-socket-programming-basics/">Lập Trình Socket với Java - Cơ Bản</a>
+            </h2>
+            <p class="post-excerpt"><p>Lập trình socket là một trong những kỹ năng cơ bản nhất trong lập trình mạng. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Java để tạo các ứng dụng client-server đơn giản.</p>
+<h2 id="socket-là-gì">Socket là gì?</h2>
+<p>Socket là một endpoint của kết nối hai chiều giữa hai chương trình chạy trên mạng. Nó được xác định bởi địa chỉ IP và số port.</p>
+<h2 id="tạo-server-socket">Tạo Server Socket</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Server</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            ServerSocket serverSocket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket(8080);
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server đang chạy trên port 8080...&#34;</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                Socket clientSocket <span style="color:#f92672">=</span> serverSocket.<span style="color:#a6e22e">accept</span>();
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã kết nối: &#34;</span> <span style="color:#f92672">+</span> clientSocket.<span style="color:#a6e22e">getInetAddress</span>());
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Xử lý client trong thread riêng</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> handleClient(clientSocket)).<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleClient</span>(Socket clientSocket) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            BufferedReader in <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader(
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> InputStreamReader(clientSocket.<span style="color:#a6e22e">getInputStream</span>())
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            PrintWriter out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter(
+</span></span><span style="display:flex;"><span>                clientSocket.<span style="color:#a6e22e">getOutputStream</span>(), <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            String inputLine;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> ((inputLine <span style="color:#f92672">=</span> in.<span style="color:#a6e22e">readLine</span>()) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận từ client: &#34;</span> <span style="color:#f92672">+</span> inputLine);
+</span></span><span style="display:flex;"><span>                out.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> inputLine);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="tạo-client-socket">Tạo Client Socket</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Client</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            Socket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Socket(<span style="color:#e6db74">&#34;localhost&#34;</span>, 8080);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            BufferedReader in <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader(
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> InputStreamReader(socket.<span style="color:#a6e22e">getInputStream</span>())
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            PrintWriter out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter(
+</span></span><span style="display:flex;"><span>                socket.<span style="color:#a6e22e">getOutputStream</span>(), <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gửi tin nhắn</span>
+</span></span><span style="display:flex;"><span>            out.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Xin chào server!&#34;</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Nhận phản hồi</span>
+</span></span><span style="display:flex;"><span>            String response <span style="color:#f92672">=</span> in.<span style="color:#a6e22e">readLine</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> response);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            socket.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Lập trình socket với Java cho phép chúng ta tạo ra các ứng dụng mạng mạnh mẽ. Việc hiểu rõ cách hoạt động của socket sẽ giúp bạn phát triển các ứng dụng client-server hiệu quả.</p></p>
+            <a href="../../posts/java-socket-programming-basics/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: truongvinhphuc05112004@gmail.com</p>
+                <p>GitHub: github.com/TVPGH</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
+

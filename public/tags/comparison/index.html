@@ -1,6 +1,121 @@
-<!doctype html><html lang=vi><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Comparison - Network Programming Blog</title><meta name=description content="Blog cá nhân về lập trình mạng với Java & JavaScript"><link rel=stylesheet href=../../css/style.css><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel=stylesheet></head><body><header class=site-header><div class=container><div class=header-content><div class=site-logo><a href=https://tvpgh.github.io/network-programming-blog/><h1>Network Programming Blog</h1></a></div><nav class=main-nav><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></nav></div></div></header><main class=main-content><div class=container><div class=blog-header><h1>Comparison</h1><p class=blog-description>Khám phá các bài viết về lập trình mạng với Java & JavaScript</p></div><div class=posts-grid><article class=post-card><div class=post-meta><time datetime=2024-02-10>10/2/2024</time>
-<span class=tag>JavaScript</span>
-<span class=tag>Axios</span>
-<span class=tag>Fetch API</span>
-<span class=tag>HTTP</span>
-<span class=tag>Comparison</span></div><h2 class=post-title><a href=../../posts/javascript-axios-vs-fetch/>So Sánh Axios và Fetch API trong JavaScript</a></h2><p class=post-excerpt><p>Khi làm việc với HTTP requests trong JavaScript, chúng ta có hai lựa chọn chính: Axios và Fetch API. Trong bài viết này, chúng ta sẽ so sánh hai phương pháp này.</p><h2 id=fetch-api>Fetch API</h2><p>Fetch API là một API native của JavaScript, được hỗ trợ trong tất cả các trình duyệt hiện đại.</p><h3 id=ưu-điểm-của-fetch-api>Ưu điểm của Fetch API</h3><ul><li><strong>Native</strong>: Không cần cài đặt thư viện bên ngoài</li><li><strong>Promise-based</strong>: Hỗ trợ async/await</li><li><strong>Lightweight</strong>: Nhẹ và nhanh</li></ul><h3 id=nhược-điểm-của-fetch-api>Nhược điểm của Fetch API</h3><ul><li><strong>Không tự động parse JSON</strong>: Cần gọi <code>.json()</code> thủ công</li><li><strong>Không có request/response interceptors</strong></li><li><strong>Không hỗ trợ timeout mặc định</strong></li><li><strong>Không hỗ trợ request cancellation</strong></li></ul><h2 id=axios>Axios</h2><p>Axios là một thư viện HTTP client phổ biến, cung cấp nhiều tính năng mạnh mẽ.</p></p><a href=../../posts/javascript-axios-vs-fetch/ class=read-more>Đọc thêm →</a></article></div></div></main><footer class=site-footer><div class=container><div class=footer-content><div class=footer-info><h3>Network Programming Blog</h3><p>Blog cá nhân về lập trình mạng với Java & JavaScript</p></div><div class=footer-links><h4>Liên kết</h4><ul><li><a href=../../>Trang chủ</a></li><li><a href=../../posts/>Blog</a></li></ul></div><div class=footer-contact><h4>Liên hệ</h4><p>Email: contact@example.com</p><p>GitHub: github.com/username</p></div></div><div class=footer-bottom><p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p></div></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/network-programming-blog/livereload.js?mindelay=10&amp;v=2&amp;port=55875&amp;path=network-programming-blog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparison - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:55875/network-programming-blog/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <div class="blog-header">
+        <h1>Comparison</h1>
+        <p class="blog-description">Khám phá các bài viết về lập trình mạng với Java & JavaScript</p>
+    </div>
+    
+    <div class="posts-grid">
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-02-10">10/2/2024</time>
+                
+                <span class="tag">JavaScript</span>
+                
+                <span class="tag">Axios</span>
+                
+                <span class="tag">Fetch API</span>
+                
+                <span class="tag">HTTP</span>
+                
+                <span class="tag">Comparison</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="../../posts/javascript-axios-vs-fetch/">So Sánh Axios và Fetch API trong JavaScript</a>
+            </h2>
+            <p class="post-excerpt"><p>Khi làm việc với HTTP requests trong JavaScript, chúng ta có hai lựa chọn chính: Axios và Fetch API. Trong bài viết này, chúng ta sẽ so sánh hai phương pháp này.</p>
+<h2 id="fetch-api">Fetch API</h2>
+<p>Fetch API là một API native của JavaScript, được hỗ trợ trong tất cả các trình duyệt hiện đại.</p>
+<h3 id="ưu-điểm-của-fetch-api">Ưu điểm của Fetch API</h3>
+<ul>
+<li><strong>Native</strong>: Không cần cài đặt thư viện bên ngoài</li>
+<li><strong>Promise-based</strong>: Hỗ trợ async/await</li>
+<li><strong>Lightweight</strong>: Nhẹ và nhanh</li>
+</ul>
+<h3 id="nhược-điểm-của-fetch-api">Nhược điểm của Fetch API</h3>
+<ul>
+<li><strong>Không tự động parse JSON</strong>: Cần gọi <code>.json()</code> thủ công</li>
+<li><strong>Không có request/response interceptors</strong></li>
+<li><strong>Không hỗ trợ timeout mặc định</strong></li>
+<li><strong>Không hỗ trợ request cancellation</strong></li>
+</ul>
+<h2 id="axios">Axios</h2>
+<p>Axios là một thư viện HTTP client phổ biến, cung cấp nhiều tính năng mạnh mẽ.</p></p>
+            <a href="../../posts/javascript-axios-vs-fetch/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="../../">Trang chủ</a></li>
+                    
+                    <li><a href="../../posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: truongvinhphuc05112004@gmail.com</p>
+                <p>GitHub: github.com/TVPGH</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+
+</body>
+</html>
+
