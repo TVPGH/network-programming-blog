@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập Trình Reactive với Spring WebFlux - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:1313/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <article class="post">
+        <header class="post-header">
+            <h1 class="post-title">Lập Trình Reactive với Spring WebFlux</h1>
+            <div class="post-meta">
+                <time datetime="2024-02-15">15/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Spring</span>
+                
+                <span class="tag">WebFlux</span>
+                
+                <span class="tag">Reactive</span>
+                
+                <span class="tag">Non-blocking</span>
+                
+            </div>
+        </header>
+        
+        <div class="post-content">
+            <p>Spring WebFlux là một framework reactive cho việc xây dựng ứng dụng web non-blocking. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Spring WebFlux.</p>
+<h2 id="spring-webflux-là-gì">Spring WebFlux là gì?</h2>
+<p>Spring WebFlux là một framework reactive được xây dựng trên Project Reactor, cho phép xây dựng ứng dụng web non-blocking và reactive.</p>
+<h2 id="reactive-programming">Reactive Programming</h2>
+<p>Reactive programming là một mô hình lập trình tập trung vào việc xử lý luồng dữ liệu bất đồng bộ và event-driven.</p>
+<h2 id="tạo-spring-webflux-project">Tạo Spring WebFlux Project</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#f92672">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-starter-webflux<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework.boot<span style="color:#f92672">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;artifactId&gt;</span>spring-boot-starter-data-mongodb-reactive<span style="color:#f92672">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/dependencies&gt;</span>
+</span></span></code></pre></div><h2 id="controller-cơ-bản">Controller cơ bản</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.bind.annotation.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Flux;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Mono;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/users&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> UserService userService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">UserController</span>(UserService userService) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">userService</span> <span style="color:#f92672">=</span> userService;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Flux<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getAllUsers</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userService.<span style="color:#a6e22e">findAll</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getUserById</span>(<span style="color:#a6e22e">@PathVariable</span> String id) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userService.<span style="color:#a6e22e">findById</span>(id);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@PostMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createUser</span>(<span style="color:#a6e22e">@RequestBody</span> User user) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userService.<span style="color:#a6e22e">save</span>(user);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@PutMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">updateUser</span>(<span style="color:#a6e22e">@PathVariable</span> String id, <span style="color:#a6e22e">@RequestBody</span> User user) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userService.<span style="color:#a6e22e">update</span>(id, user);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@DeleteMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">deleteUser</span>(<span style="color:#a6e22e">@PathVariable</span> String id) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userService.<span style="color:#a6e22e">deleteById</span>(id);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="service-layer">Service Layer</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.stereotype.Service;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Flux;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Mono;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> UserRepository userRepository;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">UserService</span>(UserRepository userRepository) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">userRepository</span> <span style="color:#f92672">=</span> userRepository;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Flux<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">findAll</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">findAll</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">findById</span>(String id) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">findById</span>(id);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">save</span>(User user) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">save</span>(user);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">update</span>(String id, User user) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">findById</span>(id)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">flatMap</span>(existingUser <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>                existingUser.<span style="color:#a6e22e">setName</span>(user.<span style="color:#a6e22e">getName</span>());
+</span></span><span style="display:flex;"><span>                existingUser.<span style="color:#a6e22e">setEmail</span>(user.<span style="color:#a6e22e">getEmail</span>());
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">save</span>(existingUser);
+</span></span><span style="display:flex;"><span>            });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>Void<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">deleteById</span>(String id) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> userRepository.<span style="color:#a6e22e">deleteById</span>(id);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="repository-layer">Repository Layer</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.stereotype.Repository;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Flux;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Repository</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">UserRepository</span> <span style="color:#66d9ef">extends</span> ReactiveMongoRepository<span style="color:#f92672">&lt;</span>User, String<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>    Flux<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">findByNameContaining</span>(String name);
+</span></span><span style="display:flex;"><span>    Flux<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">findByEmail</span>(String email);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="webclient---http-client-reactive">WebClient - HTTP Client Reactive</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.reactive.function.client.WebClient;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Mono;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExternalApiService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> WebClient webClient;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ExternalApiService</span>(WebClient.<span style="color:#a6e22e">Builder</span> webClientBuilder) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">webClient</span> <span style="color:#f92672">=</span> webClientBuilder
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">baseUrl</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>Post<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getPost</span>(String id) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> webClient.<span style="color:#a6e22e">get</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;/posts/{id}&#34;</span>, id)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">retrieve</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">bodyToMono</span>(Post.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Flux<span style="color:#f92672">&lt;</span>Post<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getAllPosts</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> webClient.<span style="color:#a6e22e">get</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;/posts&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">retrieve</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">bodyToFlux</span>(Post.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>Post<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createPost</span>(Post post) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> webClient.<span style="color:#a6e22e">post</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;/posts&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">bodyValue</span>(post)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">retrieve</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">bodyToMono</span>(Post.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="error-handling">Error Handling</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.bind.annotation.ExceptionHandler;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.bind.annotation.ResponseStatus;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.http.HttpStatus;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> reactor.core.publisher.Mono;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestControllerAdvice</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GlobalExceptionHandler</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@ExceptionHandler</span>(UserNotFoundException.<span style="color:#a6e22e">class</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@ResponseStatus</span>(HttpStatus.<span style="color:#a6e22e">NOT_FOUND</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>ErrorResponse<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">handleUserNotFound</span>(UserNotFoundException ex) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Mono.<span style="color:#a6e22e">just</span>(<span style="color:#66d9ef">new</span> ErrorResponse(<span style="color:#e6db74">&#34;User not found&#34;</span>, ex.<span style="color:#a6e22e">getMessage</span>()));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@ExceptionHandler</span>(ValidationException.<span style="color:#a6e22e">class</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@ResponseStatus</span>(HttpStatus.<span style="color:#a6e22e">BAD_REQUEST</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>ErrorResponse<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">handleValidation</span>(ValidationException ex) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Mono.<span style="color:#a6e22e">just</span>(<span style="color:#66d9ef">new</span> ErrorResponse(<span style="color:#e6db74">&#34;Validation failed&#34;</span>, ex.<span style="color:#a6e22e">getMessage</span>()));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="testing-với-webtestclient">Testing với WebTestClient</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.boot.test.context.SpringBootTest;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.test.web.reactive.server.WebTestClient;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.beans.factory.annotation.Autowired;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@SpringBootTest</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserControllerTest</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> WebTestClient webTestClient;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Test</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testGetAllUsers</span>() {
+</span></span><span style="display:flex;"><span>        webTestClient.<span style="color:#a6e22e">get</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;/api/users&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">exchange</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">expectStatus</span>().<span style="color:#a6e22e">isOk</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">expectBodyList</span>(User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Test</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCreateUser</span>() {
+</span></span><span style="display:flex;"><span>        User user <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User(<span style="color:#e6db74">&#34;John Doe&#34;</span>, <span style="color:#e6db74">&#34;john@example.com&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        webTestClient.<span style="color:#a6e22e">post</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;/api/users&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">bodyValue</span>(user)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">exchange</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">expectStatus</span>().<span style="color:#a6e22e">isCreated</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">expectBody</span>(User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="configuration">Configuration</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.context.annotation.Bean;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.context.annotation.Configuration;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> org.springframework.web.reactive.function.client.WebClient;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">WebFluxConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> WebClient <span style="color:#a6e22e">webClient</span>(WebClient.<span style="color:#a6e22e">Builder</span> builder) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> builder
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">baseUrl</span>(<span style="color:#e6db74">&#34;https://api.example.com&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">defaultHeader</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="performance-benefits">Performance Benefits</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PerformanceService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Mono<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">processData</span>(String data) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Mono.<span style="color:#a6e22e">just</span>(data)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">map</span>(<span style="color:#66d9ef">this</span>::transformData)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">flatMap</span>(<span style="color:#66d9ef">this</span>::saveData)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">map</span>(<span style="color:#66d9ef">this</span>::generateResponse);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Flux<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">processMultipleData</span>(List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> dataList) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Flux.<span style="color:#a6e22e">fromIterable</span>(dataList)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">flatMap</span>(<span style="color:#66d9ef">this</span>::processData)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">doOnNext</span>(result <span style="color:#f92672">-&gt;</span> System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Processed: &#34;</span> <span style="color:#f92672">+</span> result));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String <span style="color:#a6e22e">transformData</span>(String data) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Transform logic</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> data.<span style="color:#a6e22e">toUpperCase</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Mono<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">saveData</span>(String data) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Save logic</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Mono.<span style="color:#a6e22e">just</span>(<span style="color:#e6db74">&#34;Saved: &#34;</span> <span style="color:#f92672">+</span> data);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String <span style="color:#a6e22e">generateResponse</span>(String data) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Response generation</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;Response: &#34;</span> <span style="color:#f92672">+</span> data;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Spring WebFlux cung cấp một cách mạnh mẽ để xây dựng ứng dụng web reactive và non-blocking. Với khả năng xử lý nhiều requests đồng thời và hiệu suất cao, WebFlux là lựa chọn tốt cho các ứng dụng cần scalability cao.</p>
+
+        </div>
+        
+        <nav class="post-nav">
+            
+            <a href="/posts/javascript-axios-vs-fetch/" class="prev-post">← So Sánh Axios và Fetch API trong JavaScript</a>
+            
+            
+            <a href="/posts/javascript-nodejs-express-api/" class="next-post">Xây Dựng REST API với Node.js và Express →</a>
+            
+        </nav>
+    </article>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: contact@example.com</p>
+                <p>GitHub: github.com/username</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

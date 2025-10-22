@@ -1,0 +1,25 @@
+baseURL = 'https://example.org'
+languageCode = 'vi'
+title = 'Network Programming Blog'
+theme = 'minimal-theme'
+
+[params]
+  author = "Trương Vĩnh Phúc"
+  description = "Blog cá nhân về lập trình mạng với Java & JavaScript"
+  keywords = ["lập trình mạng", "Java", "JavaScript", "programming", "network"]
+  
+[menu]
+  [[menu.main]]
+    name = "Trang chủ"
+    url = "/"
+    weight = 1
+  
+  [[menu.main]]
+    name = "Blog"
+    url = "/posts/"
+    weight = 2
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

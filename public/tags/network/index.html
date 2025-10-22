@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:1313/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <div class="blog-header">
+        <h1>Network</h1>
+        <p class="blog-description">Khám phá các bài viết về lập trình mạng với Java & JavaScript</p>
+    </div>
+    
+    <div class="posts-grid">
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-02-01">1/2/2024</time>
+                
+                <span class="tag">JavaScript</span>
+                
+                <span class="tag">WebSocket</span>
+                
+                <span class="tag">Real-time</span>
+                
+                <span class="tag">Network</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/javascript-websocket-programming/">Lập Trình WebSocket với JavaScript</a>
+            </h2>
+            <p class="post-excerpt"><p>WebSocket cho phép giao tiếp hai chiều real-time giữa client và server. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng WebSocket API trong JavaScript.</p>
+<h2 id="websocket-là-gì">WebSocket là gì?</h2>
+<p>WebSocket là một giao thức mạng cho phép giao tiếp hai chiều qua một kết nối TCP duy nhất. Nó rất hữu ích cho các ứng dụng real-time như chat, game, và live updates.</p>
+<h2 id="tạo-websocket-connection">Tạo WebSocket Connection</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#75715e">// Kết nối WebSocket
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#e6db74">&#39;ws://localhost:8080&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Xử lý sự kiện kết nối
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">event</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Đã kết nối WebSocket&#39;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Gửi tin nhắn đầu tiên
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">send</span>(<span style="color:#e6db74">&#39;Xin chào server!&#39;</span>);
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Xử lý tin nhắn từ server
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">event</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Nhận tin nhắn:&#39;</span>, <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">displayMessage</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Xử lý lỗi
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onerror</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Lỗi WebSocket:&#39;</span>, <span style="color:#a6e22e">error</span>);
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Xử lý đóng kết nối
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onclose</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">event</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Kết nối đã đóng:&#39;</span>, <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">code</span>, <span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">reason</span>);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="chat-application">Chat Application</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ChatApp</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">username</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messageInput</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;messageInput&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messagesContainer</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;messages&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connectButton</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;connectBtn&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">disconnectButton</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;disconnectBtn&#39;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">setupEventListeners</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">setupEventListeners</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connectButton</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>, () =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connect</span>());
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">disconnectButton</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>, () =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">disconnect</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;keypress&#39;</span>, (<span style="color:#a6e22e">e</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">key</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;Enter&#39;</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">sendMessage</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">username</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">prompt</span>(<span style="color:#e6db74">&#39;Nhập tên của bạn:&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">username</span>) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#e6db74">&#39;ws://localhost:8080&#39;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Đã kết nối chat&#39;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">updateUI</span>(<span style="color:#66d9ef">true</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">displayMessage</span>(<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onclose</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Đã ngắt kết nối&#39;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">updateUI</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">disconnect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sendMessage</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">message</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">trim</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">message</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">readyState</span> <span style="color:#f92672">===</span> <span style="color:#a6e22e">WebSocket</span>.<span style="color:#a6e22e">OPEN</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">messageData</span> <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">username</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">username</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">message</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">timestamp</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">new</span> Date().<span style="color:#a6e22e">toISOString</span>()
+</span></span><span style="display:flex;"><span>            };
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>(<span style="color:#a6e22e">messageData</span>));
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">displayMessage</span>(<span style="color:#a6e22e">messageData</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">messageElement</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">createElement</span>(<span style="color:#e6db74">&#39;div&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">messageElement</span>.<span style="color:#a6e22e">className</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;message&#39;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">messageElement</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;strong&gt;</span><span style="color:#e6db74">${</span><span style="color:#a6e22e">messageData</span>.<span style="color:#a6e22e">username</span><span style="color:#e6db74">}</span><span style="color:#e6db74">:&lt;/strong&gt; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">messageData</span>.<span style="color:#a6e22e">message</span><span style="color:#e6db74">}</span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;small&gt;(</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date(<span style="color:#a6e22e">messageData</span>.<span style="color:#a6e22e">timestamp</span>).<span style="color:#a6e22e">toLocaleTimeString</span>()<span style="color:#e6db74">}</span><span style="color:#e6db74">)&lt;/small&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        `</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messagesContainer</span>.<span style="color:#a6e22e">appendChild</span>(<span style="color:#a6e22e">messageElement</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messagesContainer</span>.<span style="color:#a6e22e">scrollTop</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messagesContainer</span>.<span style="color:#a6e22e">scrollHeight</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">updateUI</span>(<span style="color:#a6e22e">connected</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connectButton</span>.<span style="color:#a6e22e">disabled</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">connected</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">disconnectButton</span>.<span style="color:#a6e22e">disabled</span> <span style="color:#f92672">=</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">connected</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">messageInput</span>.<span style="color:#a6e22e">disabled</span> <span style="color:#f92672">=</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">connected</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Khởi tạo ứng dụng chat
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">chatApp</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ChatApp</span>();
+</span></span></code></pre></div><h2 id="real-time-data-updates">Real-time Data Updates</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RealTimeDataApp</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">dataContainer</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementById</span>(<span style="color:#e6db74">&#39;dataContainer&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connect</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#e6db74">&#39;ws://localhost:8080/data&#39;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Đã kết nối real-time data&#39;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">requestData</span>();
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">updateDataDisplay</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onclose</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Kết nối đã đóng, thử kết nối lại sau 3 giây...&#39;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">setTimeout</span>(() =&gt; <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">connect</span>(), <span style="color:#ae81ff">3000</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">requestData</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">readyState</span> <span style="color:#f92672">===</span> <span style="color:#a6e22e">WebSocket</span>.<span style="color:#a6e22e">OPEN</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;request_data&#39;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">timestamp</span><span style="color:#f92672">:</span> Date.<span style="color:#a6e22e">now</span>()
+</span></span><span style="display:flex;"><span>            }));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">updateDataDisplay</span>(<span style="color:#a6e22e">data</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">dataContainer</span>.<span style="color:#a6e22e">innerHTML</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;h3&gt;Dữ liệu Real-time&lt;/h3&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;p&gt;Thời gian: </span><span style="color:#e6db74">${</span><span style="color:#66d9ef">new</span> Date(<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">timestamp</span>).<span style="color:#a6e22e">toLocaleString</span>()<span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/p&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;p&gt;Giá trị: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">value</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/p&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &lt;p&gt;Trạng thái: </span><span style="color:#e6db74">${</span><span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">status</span><span style="color:#e6db74">}</span><span style="color:#e6db74">&lt;/p&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        `</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="websocket-với-authentication">WebSocket với Authentication</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AuthenticatedWebSocket</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">constructor</span>(<span style="color:#a6e22e">token</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">token</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">token</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">connect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Thêm token vào URL
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">wsUrl</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">`ws://localhost:8080/secure?token=</span><span style="color:#e6db74">${</span><span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">token</span><span style="color:#e6db74">}</span><span style="color:#e6db74">`</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">WebSocket</span>(<span style="color:#a6e22e">wsUrl</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onopen</span> <span style="color:#f92672">=</span> () =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Đã kết nối với xác thực&#39;</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onmessage</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">data</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">parse</span>(<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;auth_success&#39;</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#39;Xác thực thành công&#39;</span>);
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">type</span> <span style="color:#f92672">===</span> <span style="color:#e6db74">&#39;auth_failed&#39;</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Xác thực thất bại:&#39;</span>, <span style="color:#a6e22e">data</span>.<span style="color:#a6e22e">message</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">onclose</span> <span style="color:#f92672">=</span> (<span style="color:#a6e22e">event</span>) =&gt; {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">event</span>.<span style="color:#a6e22e">code</span> <span style="color:#f92672">===</span> <span style="color:#ae81ff">1008</span>) {
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">error</span>(<span style="color:#e6db74">&#39;Kết nối bị đóng do lỗi xác thực&#39;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">sendSecureMessage</span>(<span style="color:#a6e22e">message</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">readyState</span> <span style="color:#f92672">===</span> <span style="color:#a6e22e">WebSocket</span>.<span style="color:#a6e22e">OPEN</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">this</span>.<span style="color:#a6e22e">socket</span>.<span style="color:#a6e22e">send</span>(<span style="color:#a6e22e">JSON</span>.<span style="color:#a6e22e">stringify</span>({
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">type</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;secure_message&#39;</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">data</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">message</span>,
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">timestamp</span><span style="color:#f92672">:</span> Date.<span style="color:#a6e22e">now</span>()
+</span></span><span style="display:flex;"><span>            }));
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>WebSocket API trong JavaScript cung cấp một cách mạnh mẽ để xây dựng các ứng dụng real-time. Với khả năng giao tiếp hai chiều và hiệu suất cao, WebSocket là lựa chọn tốt cho các ứng dụng cần cập nhật dữ liệu real-time.</p></p>
+            <a href="/posts/javascript-websocket-programming/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-01-25">25/1/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">HTTP Client</span>
+                
+                <span class="tag">REST API</span>
+                
+                <span class="tag">Network</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-http-client-tutorial/">Hướng Dẫn Sử Dụng HTTP Client trong Java 11&#43;</a>
+            </h2>
+            <p class="post-excerpt"><p>Java 11 đã giới thiệu HTTP Client API mới, thay thế cho HttpURLConnection cũ. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng HTTP Client API hiện đại này.</p>
+<h2 id="http-client-api-là-gì">HTTP Client API là gì?</h2>
+<p>HTTP Client API cung cấp một cách hiện đại và linh hoạt để thực hiện HTTP requests trong Java. Nó hỗ trợ HTTP/2, WebSocket và các tính năng async.</p>
+<h2 id="cú-pháp-cơ-bản">Cú pháp cơ bản</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpClient;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpRequest;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpResponse;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BasicHttpClient</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://api.example.com/users&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Body: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="get-request">GET Request</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.time.Duration;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GetRequestExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">connectTimeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(10))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/1&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Accept&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">GET</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">==</span> 200) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Dữ liệu nhận được:&#34;</span>);
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="post-request-với-json">POST Request với JSON</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.charset.StandardCharsets;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PostRequestExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        String jsonData <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;title&#34;: &#34;Bài viết mới&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;body&#34;: &#34;Nội dung bài viết&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;userId&#34;: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">POST</span>(HttpRequest.<span style="color:#a6e22e">BodyPublishers</span>.<span style="color:#a6e22e">ofString</span>(jsonData))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Response: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="async-http-requests">Async HTTP Requests</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.CompletableFuture;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncHttpExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo nhiều requests đồng thời</span>
+</span></span><span style="display:flex;"><span>        CompletableFuture<span style="color:#f92672">&lt;</span>HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;&gt;</span> future1 <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">sendAsync</span>(
+</span></span><span style="display:flex;"><span>            HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/1&#34;</span>))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>(),
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        CompletableFuture<span style="color:#f92672">&lt;</span>HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;&gt;</span> future2 <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">sendAsync</span>(
+</span></span><span style="display:flex;"><span>            HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/2&#34;</span>))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>(),
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Chờ tất cả requests hoàn thành</span>
+</span></span><span style="display:flex;"><span>        CompletableFuture.<span style="color:#a6e22e">allOf</span>(future1, future2).<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Post 1: &#34;</span> <span style="color:#f92672">+</span> future1.<span style="color:#a6e22e">get</span>().<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Post 2: &#34;</span> <span style="color:#f92672">+</span> future2.<span style="color:#a6e22e">get</span>().<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="xử-lý-lỗi-và-timeout">Xử lý lỗi và timeout</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.time.Duration;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.TimeoutException;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorHandlingExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">connectTimeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(5))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://httpstat.us/500&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">timeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(10))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>                HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">&gt;=</span> 200 <span style="color:#f92672">&amp;&amp;</span> response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">&lt;</span> 300) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thành công: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi HTTP: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (TimeoutException e) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Request timeout&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (Exception e) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi: &#34;</span> <span style="color:#f92672">+</span> e.<span style="color:#a6e22e">getMessage</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="authentication-với-bearer-token">Authentication với Bearer Token</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AuthenticatedRequest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        String token <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;your-jwt-token-here&#34;</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://api.example.com/protected-resource&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Authorization&#34;</span>, <span style="color:#e6db74">&#34;Bearer &#34;</span> <span style="color:#f92672">+</span> token)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Accept&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">GET</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Response: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>HTTP Client API trong Java 11+ cung cấp một cách hiện đại và mạnh mẽ để thực hiện HTTP requests. Với hỗ trợ async, HTTP/2 và các tính năng nâng cao, nó là lựa chọn tốt nhất cho việc phát triển ứng dụng mạng trong Java.</p></p>
+            <a href="/posts/java-http-client-tutorial/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: contact@example.com</p>
+                <p>GitHub: github.com/username</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

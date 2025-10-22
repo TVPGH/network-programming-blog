@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập Trình Mạng với Java NIO - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:1313/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <article class="post">
+        <header class="post-header">
+            <h1 class="post-title">Lập Trình Mạng với Java NIO</h1>
+            <div class="post-meta">
+                <time datetime="2024-02-05">5/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">NIO</span>
+                
+                <span class="tag">Non-blocking</span>
+                
+                <span class="tag">Network Programming</span>
+                
+            </div>
+        </header>
+        
+        <div class="post-content">
+            <p>Java NIO (New I/O) cung cấp một cách hiệu quả hơn để xử lý I/O operations. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng NIO cho lập trình mạng.</p>
+<h2 id="nio-là-gì">NIO là gì?</h2>
+<p>NIO (New I/O) là một API mới trong Java cho phép xử lý I/O operations một cách non-blocking và hiệu quả hơn so với I/O truyền thống.</p>
+<h2 id="các-thành-phần-chính-của-nio">Các thành phần chính của NIO</h2>
+<ul>
+<li><strong>Channels</strong>: Kênh giao tiếp</li>
+<li><strong>Buffers</strong>: Vùng đệm dữ liệu</li>
+<li><strong>Selectors</strong>: Bộ chọn để quản lý nhiều channels</li>
+</ul>
+<h2 id="server-nio-cơ-bản">Server NIO cơ bản</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Iterator;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Set;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Selector selector;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> ServerSocketChannel serverChannel;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span>(<span style="color:#66d9ef">int</span> port) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo selector</span>
+</span></span><span style="display:flex;"><span>        selector <span style="color:#f92672">=</span> Selector.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo server socket channel</span>
+</span></span><span style="display:flex;"><span>        serverChannel <span style="color:#f92672">=</span> ServerSocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">configureBlocking</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">bind</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(port));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Đăng ký server channel với selector</span>
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">register</span>(selector, SelectionKey.<span style="color:#a6e22e">OP_ACCEPT</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;NIO Server đang chạy trên port &#34;</span> <span style="color:#f92672">+</span> port);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Vòng lặp chính</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Chờ các events</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> readyChannels <span style="color:#f92672">=</span> selector.<span style="color:#a6e22e">select</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (readyChannels <span style="color:#f92672">==</span> 0) <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Lấy các keys đã sẵn sàng</span>
+</span></span><span style="display:flex;"><span>            Set<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> selectedKeys <span style="color:#f92672">=</span> selector.<span style="color:#a6e22e">selectedKeys</span>();
+</span></span><span style="display:flex;"><span>            Iterator<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> keyIterator <span style="color:#f92672">=</span> selectedKeys.<span style="color:#a6e22e">iterator</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (keyIterator.<span style="color:#a6e22e">hasNext</span>()) {
+</span></span><span style="display:flex;"><span>                SelectionKey key <span style="color:#f92672">=</span> keyIterator.<span style="color:#a6e22e">next</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isAcceptable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleAccept(key);
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isReadable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleRead(key);
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isWritable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleWrite(key);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                keyIterator.<span style="color:#a6e22e">remove</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleAccept</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        ServerSocketChannel serverChannel <span style="color:#f92672">=</span> (ServerSocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        SocketChannel clientChannel <span style="color:#f92672">=</span> serverChannel.<span style="color:#a6e22e">accept</span>();
+</span></span><span style="display:flex;"><span>        clientChannel.<span style="color:#a6e22e">configureBlocking</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Đăng ký client channel để đọc</span>
+</span></span><span style="display:flex;"><span>        clientChannel.<span style="color:#a6e22e">register</span>(selector, SelectionKey.<span style="color:#a6e22e">OP_READ</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã kết nối: &#34;</span> <span style="color:#f92672">+</span> clientChannel.<span style="color:#a6e22e">getRemoteAddress</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleRead</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        SocketChannel clientChannel <span style="color:#f92672">=</span> (SocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> clientChannel.<span style="color:#a6e22e">read</span>(buffer);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>            buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>buffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>            buffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>            String message <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận từ client: &#34;</span> <span style="color:#f92672">+</span> message);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gửi phản hồi</span>
+</span></span><span style="display:flex;"><span>            String response <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> message;
+</span></span><span style="display:flex;"><span>            ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(response.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>            clientChannel.<span style="color:#a6e22e">write</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Client đã đóng kết nối</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã ngắt kết nối&#34;</span>);
+</span></span><span style="display:flex;"><span>            clientChannel.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleWrite</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Xử lý ghi dữ liệu</span>
+</span></span><span style="display:flex;"><span>        SocketChannel channel <span style="color:#f92672">=</span> (SocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Logic ghi dữ liệu ở đây</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">new</span> NIOServer().<span style="color:#a6e22e">start</span>(8080);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="client-nio">Client NIO</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.SocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Scanner;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOClient</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            SocketChannel socketChannel <span style="color:#f92672">=</span> SocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>            socketChannel.<span style="color:#a6e22e">connect</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(<span style="color:#e6db74">&#34;localhost&#34;</span>, 8080));
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            Scanner scanner <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Scanner(System.<span style="color:#a6e22e">in</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;Nhập tin nhắn (hoặc &#39;quit&#39; để thoát): &#34;</span>);
+</span></span><span style="display:flex;"><span>                String message <span style="color:#f92672">=</span> scanner.<span style="color:#a6e22e">nextLine</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#e6db74">&#34;quit&#34;</span>.<span style="color:#a6e22e">equals</span>(message)) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Gửi tin nhắn</span>
+</span></span><span style="display:flex;"><span>                ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(message.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>                socketChannel.<span style="color:#a6e22e">write</span>(buffer);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Nhận phản hồi</span>
+</span></span><span style="display:flex;"><span>                ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> socketChannel.<span style="color:#a6e22e">read</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>                    responseBuffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>responseBuffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>                    responseBuffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>                    String response <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>                    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> response);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            socketChannel.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>            scanner.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="non-blocking-file-transfer">Non-blocking File Transfer</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.file.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOFileTransfer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">transferFile</span>(String sourcePath, String destPath) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        Path source <span style="color:#f92672">=</span> Paths.<span style="color:#a6e22e">get</span>(sourcePath);
+</span></span><span style="display:flex;"><span>        Path destination <span style="color:#f92672">=</span> Paths.<span style="color:#a6e22e">get</span>(destPath);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (FileChannel sourceChannel <span style="color:#f92672">=</span> FileChannel.<span style="color:#a6e22e">open</span>(source, StandardOpenOption.<span style="color:#a6e22e">READ</span>);
+</span></span><span style="display:flex;"><span>             FileChannel destChannel <span style="color:#f92672">=</span> FileChannel.<span style="color:#a6e22e">open</span>(destination, 
+</span></span><span style="display:flex;"><span>                 StandardOpenOption.<span style="color:#a6e22e">CREATE</span>, StandardOpenOption.<span style="color:#a6e22e">WRITE</span>)) {
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(8192);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> transferred <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> fileSize <span style="color:#f92672">=</span> sourceChannel.<span style="color:#a6e22e">size</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (transferred <span style="color:#f92672">&lt;</span> fileSize) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> sourceChannel.<span style="color:#a6e22e">read</span>(buffer);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                destChannel.<span style="color:#a6e22e">write</span>(buffer);
+</span></span><span style="display:flex;"><span>                buffer.<span style="color:#a6e22e">clear</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                transferred <span style="color:#f92672">+=</span> bytesRead;
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Đã chuyển: &#34;</span> <span style="color:#f92672">+</span> (transferred <span style="color:#f92672">*</span> 100 <span style="color:#f92672">/</span> fileSize) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Chuyển file hoàn tất!&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            transferFile(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;output.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="asynchronous-nio">Asynchronous NIO</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.AsynchronousServerSocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.AsynchronousSocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.CompletionHandler;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.CountDownLatch;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncNIOServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        AsynchronousServerSocketChannel server <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>            AsynchronousServerSocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        server.<span style="color:#a6e22e">bind</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(8080));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Async NIO Server đang chạy...&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        server.<span style="color:#a6e22e">accept</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">new</span> CompletionHandler<span style="color:#f92672">&lt;</span>AsynchronousSocketChannel, Void<span style="color:#f92672">&gt;</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">completed</span>(AsynchronousSocketChannel client, Void attachment) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Chấp nhận kết nối mới</span>
+</span></span><span style="display:flex;"><span>                server.<span style="color:#a6e22e">accept</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Xử lý client</span>
+</span></span><span style="display:flex;"><span>                handleClient(client);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">failed</span>(Throwable exc, Void attachment) {
+</span></span><span style="display:flex;"><span>                exc.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Giữ server chạy</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">new</span> CountDownLatch(1).<span style="color:#a6e22e">await</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleClient</span>(AsynchronousSocketChannel client) {
+</span></span><span style="display:flex;"><span>        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        client.<span style="color:#a6e22e">read</span>(buffer, <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">new</span> CompletionHandler<span style="color:#f92672">&lt;</span>Integer, Void<span style="color:#f92672">&gt;</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">completed</span>(Integer bytesRead, Void attachment) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>                    buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>buffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>                    buffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>                    String message <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận: &#34;</span> <span style="color:#f92672">+</span> message);
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Gửi phản hồi</span>
+</span></span><span style="display:flex;"><span>                    String response <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Async Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> message;
+</span></span><span style="display:flex;"><span>                    ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(response.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>                    client.<span style="color:#a6e22e">write</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">failed</span>(Throwable exc, Void attachment) {
+</span></span><span style="display:flex;"><span>                exc.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Java NIO cung cấp một cách hiệu quả và scalable để xử lý I/O operations. Với khả năng non-blocking và asynchronous, NIO là lựa chọn tốt cho các ứng dụng mạng hiệu suất cao.</p>
+
+        </div>
+        
+        <nav class="post-nav">
+            
+            <a href="/posts/javascript-websocket-programming/" class="prev-post">← Lập Trình WebSocket với JavaScript</a>
+            
+            
+            <a href="/posts/javascript-axios-vs-fetch/" class="next-post">So Sánh Axios và Fetch API trong JavaScript →</a>
+            
+        </nav>
+    </article>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: contact@example.com</p>
+                <p>GitHub: github.com/username</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

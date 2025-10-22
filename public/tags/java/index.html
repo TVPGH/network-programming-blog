@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java - Network Programming Blog</title>
+    <meta name="description" content="Blog cá nhân về lập trình mạng với Java &amp; JavaScript">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="site-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="site-logo">
+                <a href="http://localhost:1313/">
+                    <h1>Network Programming Blog</h1>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </nav>
+        </div>
+    </div>
+</header>
+
+    
+    <main class="main-content">
+        
+<div class="container">
+    <div class="blog-header">
+        <h1>Java</h1>
+        <p class="blog-description">Khám phá các bài viết về lập trình mạng với Java & JavaScript</p>
+    </div>
+    
+    <div class="posts-grid">
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-02-25">25/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Microservices</span>
+                
+                <span class="tag">Communication</span>
+                
+                <span class="tag">Spring Cloud</span>
+                
+                <span class="tag">Distributed Systems</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-microservices-communication/">Giao Tiếp Giữa Các Microservices với Java</a>
+            </h2>
+            <p class="post-excerpt"><p>Microservices architecture yêu cầu các service giao tiếp với nhau một cách hiệu quả. Trong bài viết này, chúng ta sẽ tìm hiểu các phương pháp giao tiếp giữa microservices.</p>
+<h2 id="các-phương-pháp-giao-tiếp">Các phương pháp giao tiếp</h2>
+<h3 id="1-synchronous-communication-httprest">1. Synchronous Communication (HTTP/REST)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// User Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/users&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> UserService userService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>User<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getUser</span>(<span style="color:#a6e22e">@PathVariable</span> Long id) {
+</span></span><span style="display:flex;"><span>        User user <span style="color:#f92672">=</span> userService.<span style="color:#a6e22e">findById</span>(id);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(user);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Order Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RestTemplate restTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Order <span style="color:#a6e22e">createOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gọi User Service để lấy thông tin user</span>
+</span></span><span style="display:flex;"><span>        String userServiceUrl <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://user-service/api/users/&#34;</span> <span style="color:#f92672">+</span> request.<span style="color:#a6e22e">getUserId</span>();
+</span></span><span style="display:flex;"><span>        User user <span style="color:#f92672">=</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(userServiceUrl, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (user <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> UserNotFoundException(<span style="color:#e6db74">&#34;User not found&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo order</span>
+</span></span><span style="display:flex;"><span>        Order order <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Order();
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setUserId</span>(user.<span style="color:#a6e22e">getId</span>());
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setUserEmail</span>(user.<span style="color:#a6e22e">getEmail</span>());
+</span></span><span style="display:flex;"><span>        order.<span style="color:#a6e22e">setItems</span>(request.<span style="color:#a6e22e">getItems</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> orderRepository.<span style="color:#a6e22e">save</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="2-asynchronous-communication-message-queues">2. Asynchronous Communication (Message Queues)</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Message Publisher</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderEventPublisher</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RabbitTemplate rabbitTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">publishOrderCreated</span>(Order order) {
+</span></span><span style="display:flex;"><span>        OrderCreatedEvent event <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OrderCreatedEvent();
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setOrderId</span>(order.<span style="color:#a6e22e">getId</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setUserId</span>(order.<span style="color:#a6e22e">getUserId</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setTotalAmount</span>(order.<span style="color:#a6e22e">getTotalAmount</span>());
+</span></span><span style="display:flex;"><span>        event.<span style="color:#a6e22e">setTimestamp</span>(LocalDateTime.<span style="color:#a6e22e">now</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        rabbitTemplate.<span style="color:#a6e22e">convertAndSend</span>(<span style="color:#e6db74">&#34;order.exchange&#34;</span>, <span style="color:#e6db74">&#34;order.created&#34;</span>, event);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Message Consumer</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RabbitListener</span>(queues <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;order.created.queue&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderEventHandler</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> NotificationService notificationService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> InventoryService inventoryService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleOrderCreated</span>(OrderCreatedEvent event) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gửi email thông báo</span>
+</span></span><span style="display:flex;"><span>        notificationService.<span style="color:#a6e22e">sendOrderConfirmation</span>(event.<span style="color:#a6e22e">getUserId</span>(), event.<span style="color:#a6e22e">getOrderId</span>());
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Cập nhật inventory</span>
+</span></span><span style="display:flex;"><span>        inventoryService.<span style="color:#a6e22e">reserveItems</span>(event.<span style="color:#a6e22e">getOrderId</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="3-service-discovery-với-eureka">3. Service Discovery với Eureka</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Eureka Client Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@SpringBootApplication</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@EnableEurekaClient</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderServiceApplication</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        SpringApplication.<span style="color:#a6e22e">run</span>(OrderServiceApplication.<span style="color:#a6e22e">class</span>, args);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service Discovery</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceClient</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> DiscoveryClient discoveryClient;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> RestTemplate restTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserById</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tìm service instance</span>
+</span></span><span style="display:flex;"><span>        List<span style="color:#f92672">&lt;</span>ServiceInstance<span style="color:#f92672">&gt;</span> instances <span style="color:#f92672">=</span> discoveryClient.<span style="color:#a6e22e">getInstances</span>(<span style="color:#e6db74">&#34;user-service&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (instances.<span style="color:#a6e22e">isEmpty</span>()) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> ServiceUnavailableException(<span style="color:#e6db74">&#34;User service not available&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Chọn instance đầu tiên (có thể implement load balancing)</span>
+</span></span><span style="display:flex;"><span>        ServiceInstance instance <span style="color:#f92672">=</span> instances.<span style="color:#a6e22e">get</span>(0);
+</span></span><span style="display:flex;"><span>        String url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://&#34;</span> <span style="color:#f92672">+</span> instance.<span style="color:#a6e22e">getHost</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;:&#34;</span> <span style="color:#f92672">+</span> instance.<span style="color:#a6e22e">getPort</span>() <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;/api/users/&#34;</span> <span style="color:#f92672">+</span> userId;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(url, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="4-api-gateway-với-spring-cloud-gateway">4. API Gateway với Spring Cloud Gateway</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Gateway Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GatewayConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> RouteLocator <span style="color:#a6e22e">customRouteLocator</span>(RouteLocatorBuilder builder) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> builder.<span style="color:#a6e22e">routes</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;user-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/users/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://user-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;order-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/orders/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://order-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">route</span>(<span style="color:#e6db74">&#34;payment-service&#34;</span>, r <span style="color:#f92672">-&gt;</span> r.<span style="color:#a6e22e">path</span>(<span style="color:#e6db74">&#34;/api/payments/**&#34;</span>)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">filters</span>(f <span style="color:#f92672">-&gt;</span> f.<span style="color:#a6e22e">stripPrefix</span>(2))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(<span style="color:#e6db74">&#34;lb://payment-service&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> GlobalFilter <span style="color:#a6e22e">customGlobalFilter</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (exchange, chain) <span style="color:#f92672">-&gt;</span> {
+</span></span><span style="display:flex;"><span>            ServerHttpRequest request <span style="color:#f92672">=</span> exchange.<span style="color:#a6e22e">getRequest</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Thêm correlation ID</span>
+</span></span><span style="display:flex;"><span>            String correlationId <span style="color:#f92672">=</span> UUID.<span style="color:#a6e22e">randomUUID</span>().<span style="color:#a6e22e">toString</span>();
+</span></span><span style="display:flex;"><span>            ServerHttpRequest mutatedRequest <span style="color:#f92672">=</span> request.<span style="color:#a6e22e">mutate</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;X-Correlation-ID&#34;</span>, correlationId)
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> chain.<span style="color:#a6e22e">filter</span>(exchange.<span style="color:#a6e22e">mutate</span>().<span style="color:#a6e22e">request</span>(mutatedRequest).<span style="color:#a6e22e">build</span>());
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="5-circuit-breaker-với-hystrix">5. Circuit Breaker với Hystrix</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Circuit Breaker Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HystrixConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> HystrixCommandAspect <span style="color:#a6e22e">hystrixCommandAspect</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> HystrixCommandAspect();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service với Circuit Breaker</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceClient</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@HystrixCommand</span>(fallbackMethod <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;getUserFallback&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserById</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Gọi external service</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> restTemplate.<span style="color:#a6e22e">getForObject</span>(<span style="color:#e6db74">&#34;/api/users/&#34;</span> <span style="color:#f92672">+</span> userId, User.<span style="color:#a6e22e">class</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> User <span style="color:#a6e22e">getUserFallback</span>(Long userId) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Fallback method</span>
+</span></span><span style="display:flex;"><span>        User fallbackUser <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> User();
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setId</span>(userId);
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setName</span>(<span style="color:#e6db74">&#34;Unknown User&#34;</span>);
+</span></span><span style="display:flex;"><span>        fallbackUser.<span style="color:#a6e22e">setEmail</span>(<span style="color:#e6db74">&#34;unknown@example.com&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> fallbackUser;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="6-distributed-tracing-với-sleuth">6. Distributed Tracing với Sleuth</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Configuration</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SleuthConfig</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Bean</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Sampler <span style="color:#a6e22e">alwaysSampler</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Sampler.<span style="color:#a6e22e">create</span>(1.<span style="color:#a6e22e">0f</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Service với Tracing</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Service</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderService</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Tracer tracer;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Order <span style="color:#a6e22e">processOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        Span span <span style="color:#f92672">=</span> tracer.<span style="color:#a6e22e">nextSpan</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">name</span>(<span style="color:#e6db74">&#34;process-order&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">tag</span>(<span style="color:#e6db74">&#34;order.id&#34;</span>, request.<span style="color:#a6e22e">getOrderId</span>())
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (Tracer.<span style="color:#a6e22e">SpanInScope</span> ws <span style="color:#f92672">=</span> tracer.<span style="color:#a6e22e">withSpanInScope</span>(span)) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Xử lý order</span>
+</span></span><span style="display:flex;"><span>            Order order <span style="color:#f92672">=</span> createOrder(request);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gọi các service khác</span>
+</span></span><span style="display:flex;"><span>            updateInventory(order);
+</span></span><span style="display:flex;"><span>            sendNotification(order);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> order;
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">finally</span> {
+</span></span><span style="display:flex;"><span>            span.<span style="color:#a6e22e">end</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="7-event-sourcing">7. Event Sourcing</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Event Store</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@Component</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EventStore</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> JdbcTemplate jdbcTemplate;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">saveEvent</span>(DomainEvent event) {
+</span></span><span style="display:flex;"><span>        String sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;INSERT INTO events (aggregate_id, event_type, event_data, timestamp) VALUES (?, ?, ?, ?)&#34;</span>;
+</span></span><span style="display:flex;"><span>        jdbcTemplate.<span style="color:#a6e22e">update</span>(sql, 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getAggregateId</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getEventType</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getEventData</span>(), 
+</span></span><span style="display:flex;"><span>            event.<span style="color:#a6e22e">getTimestamp</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getEvents</span>(String aggregateId) {
+</span></span><span style="display:flex;"><span>        String sql <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SELECT * FROM events WHERE aggregate_id = ? ORDER BY timestamp&#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> jdbcTemplate.<span style="color:#a6e22e">query</span>(sql, <span style="color:#66d9ef">new</span> Object<span style="color:#f92672">[]</span>{aggregateId}, <span style="color:#66d9ef">new</span> EventRowMapper());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Aggregate Root</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Order</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> String id;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> uncommittedEvents <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;</span>();
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">createOrder</span>(OrderRequest request) {
+</span></span><span style="display:flex;"><span>        OrderCreatedEvent event <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> OrderCreatedEvent(id, request);
+</span></span><span style="display:flex;"><span>        apply(event);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">apply</span>(DomainEvent event) {
+</span></span><span style="display:flex;"><span>        uncommittedEvents.<span style="color:#a6e22e">add</span>(event);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Apply event to aggregate state</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> List<span style="color:#f92672">&lt;</span>DomainEvent<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getUncommittedEvents</span>() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> uncommittedEvents;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="8-cqrs-pattern">8. CQRS Pattern</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Command Side</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/orders&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderCommandController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> OrderCommandService orderCommandService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@PostMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>Order<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createOrder</span>(<span style="color:#a6e22e">@RequestBody</span> CreateOrderCommand command) {
+</span></span><span style="display:flex;"><span>        Order order <span style="color:#f92672">=</span> orderCommandService.<span style="color:#a6e22e">createOrder</span>(command);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Query Side</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RestController</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@RequestMapping</span>(<span style="color:#e6db74">&#34;/api/orders&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">OrderQueryController</span> {
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@Autowired</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> OrderQueryService orderQueryService;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>(<span style="color:#e6db74">&#34;/{id}&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">getOrder</span>(<span style="color:#a6e22e">@PathVariable</span> String id) {
+</span></span><span style="display:flex;"><span>        OrderView order <span style="color:#f92672">=</span> orderQueryService.<span style="color:#a6e22e">getOrder</span>(id);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(order);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@GetMapping</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> ResponseEntity<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">getOrders</span>(<span style="color:#a6e22e">@RequestParam</span> String userId) {
+</span></span><span style="display:flex;"><span>        List<span style="color:#f92672">&lt;</span>OrderView<span style="color:#f92672">&gt;</span> orders <span style="color:#f92672">=</span> orderQueryService.<span style="color:#a6e22e">getOrdersByUser</span>(userId);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ResponseEntity.<span style="color:#a6e22e">ok</span>(orders);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Giao tiếp giữa các microservices là một thách thức phức tạp. Việc lựa chọn phương pháp giao tiếp phù hợp phụ thuộc vào yêu cầu cụ thể của hệ thống. Synchronous communication phù hợp cho các tương tác real-time, trong khi asynchronous communication phù hợp cho các tương tác không cần phản hồi ngay lập tức.</p></p>
+            <a href="/posts/java-microservices-communication/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-02-15">15/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Spring</span>
+                
+                <span class="tag">WebFlux</span>
+                
+                <span class="tag">Reactive</span>
+                
+                <span class="tag">Non-blocking</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-spring-webflux/">Lập Trình Reactive với Spring WebFlux</a>
+            </h2>
+            <p class="post-excerpt"><p>Spring WebFlux là một framework reactive cho việc xây dựng ứng dụng web non-blocking. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Spring WebFlux.</p>
+<h2 id="spring-webflux-là-gì">Spring WebFlux là gì?</h2>
+<p>Spring WebFlux là một framework reactive được xây dựng trên Project Reactor, cho phép xây dựng ứng dụng web non-blocking và reactive.</p>
+<h2 id="reactive-programming">Reactive Programming</h2>
+<p>Reactive programming là một mô hình lập trình tập trung vào việc xử lý luồng dữ liệu bất đồng bộ và event-driven.</p></p>
+            <a href="/posts/java-spring-webflux/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-02-05">5/2/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">NIO</span>
+                
+                <span class="tag">Non-blocking</span>
+                
+                <span class="tag">Network Programming</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-nio-networking/">Lập Trình Mạng với Java NIO</a>
+            </h2>
+            <p class="post-excerpt"><p>Java NIO (New I/O) cung cấp một cách hiệu quả hơn để xử lý I/O operations. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng NIO cho lập trình mạng.</p>
+<h2 id="nio-là-gì">NIO là gì?</h2>
+<p>NIO (New I/O) là một API mới trong Java cho phép xử lý I/O operations một cách non-blocking và hiệu quả hơn so với I/O truyền thống.</p>
+<h2 id="các-thành-phần-chính-của-nio">Các thành phần chính của NIO</h2>
+<ul>
+<li><strong>Channels</strong>: Kênh giao tiếp</li>
+<li><strong>Buffers</strong>: Vùng đệm dữ liệu</li>
+<li><strong>Selectors</strong>: Bộ chọn để quản lý nhiều channels</li>
+</ul>
+<h2 id="server-nio-cơ-bản">Server NIO cơ bản</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Iterator;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Set;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Selector selector;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> ServerSocketChannel serverChannel;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span>(<span style="color:#66d9ef">int</span> port) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo selector</span>
+</span></span><span style="display:flex;"><span>        selector <span style="color:#f92672">=</span> Selector.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo server socket channel</span>
+</span></span><span style="display:flex;"><span>        serverChannel <span style="color:#f92672">=</span> ServerSocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">configureBlocking</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">bind</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(port));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Đăng ký server channel với selector</span>
+</span></span><span style="display:flex;"><span>        serverChannel.<span style="color:#a6e22e">register</span>(selector, SelectionKey.<span style="color:#a6e22e">OP_ACCEPT</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;NIO Server đang chạy trên port &#34;</span> <span style="color:#f92672">+</span> port);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Vòng lặp chính</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Chờ các events</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> readyChannels <span style="color:#f92672">=</span> selector.<span style="color:#a6e22e">select</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (readyChannels <span style="color:#f92672">==</span> 0) <span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Lấy các keys đã sẵn sàng</span>
+</span></span><span style="display:flex;"><span>            Set<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> selectedKeys <span style="color:#f92672">=</span> selector.<span style="color:#a6e22e">selectedKeys</span>();
+</span></span><span style="display:flex;"><span>            Iterator<span style="color:#f92672">&lt;</span>SelectionKey<span style="color:#f92672">&gt;</span> keyIterator <span style="color:#f92672">=</span> selectedKeys.<span style="color:#a6e22e">iterator</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (keyIterator.<span style="color:#a6e22e">hasNext</span>()) {
+</span></span><span style="display:flex;"><span>                SelectionKey key <span style="color:#f92672">=</span> keyIterator.<span style="color:#a6e22e">next</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isAcceptable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleAccept(key);
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isReadable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleRead(key);
+</span></span><span style="display:flex;"><span>                } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (key.<span style="color:#a6e22e">isWritable</span>()) {
+</span></span><span style="display:flex;"><span>                    handleWrite(key);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                keyIterator.<span style="color:#a6e22e">remove</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleAccept</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        ServerSocketChannel serverChannel <span style="color:#f92672">=</span> (ServerSocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        SocketChannel clientChannel <span style="color:#f92672">=</span> serverChannel.<span style="color:#a6e22e">accept</span>();
+</span></span><span style="display:flex;"><span>        clientChannel.<span style="color:#a6e22e">configureBlocking</span>(<span style="color:#66d9ef">false</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Đăng ký client channel để đọc</span>
+</span></span><span style="display:flex;"><span>        clientChannel.<span style="color:#a6e22e">register</span>(selector, SelectionKey.<span style="color:#a6e22e">OP_READ</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã kết nối: &#34;</span> <span style="color:#f92672">+</span> clientChannel.<span style="color:#a6e22e">getRemoteAddress</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleRead</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        SocketChannel clientChannel <span style="color:#f92672">=</span> (SocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> clientChannel.<span style="color:#a6e22e">read</span>(buffer);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>            buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>buffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>            buffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>            String message <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận từ client: &#34;</span> <span style="color:#f92672">+</span> message);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gửi phản hồi</span>
+</span></span><span style="display:flex;"><span>            String response <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> message;
+</span></span><span style="display:flex;"><span>            ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(response.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>            clientChannel.<span style="color:#a6e22e">write</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1) {
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Client đã đóng kết nối</span>
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã ngắt kết nối&#34;</span>);
+</span></span><span style="display:flex;"><span>            clientChannel.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleWrite</span>(SelectionKey key) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Xử lý ghi dữ liệu</span>
+</span></span><span style="display:flex;"><span>        SocketChannel channel <span style="color:#f92672">=</span> (SocketChannel) key.<span style="color:#a6e22e">channel</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Logic ghi dữ liệu ở đây</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">new</span> NIOServer().<span style="color:#a6e22e">start</span>(8080);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="client-nio">Client NIO</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.SocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.Scanner;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOClient</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            SocketChannel socketChannel <span style="color:#f92672">=</span> SocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>            socketChannel.<span style="color:#a6e22e">connect</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(<span style="color:#e6db74">&#34;localhost&#34;</span>, 8080));
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            Scanner scanner <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Scanner(System.<span style="color:#a6e22e">in</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">print</span>(<span style="color:#e6db74">&#34;Nhập tin nhắn (hoặc &#39;quit&#39; để thoát): &#34;</span>);
+</span></span><span style="display:flex;"><span>                String message <span style="color:#f92672">=</span> scanner.<span style="color:#a6e22e">nextLine</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (<span style="color:#e6db74">&#34;quit&#34;</span>.<span style="color:#a6e22e">equals</span>(message)) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Gửi tin nhắn</span>
+</span></span><span style="display:flex;"><span>                ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(message.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>                socketChannel.<span style="color:#a6e22e">write</span>(buffer);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Nhận phản hồi</span>
+</span></span><span style="display:flex;"><span>                ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> socketChannel.<span style="color:#a6e22e">read</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>                    responseBuffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>responseBuffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>                    responseBuffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>                    String response <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>                    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> response);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            socketChannel.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>            scanner.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="non-blocking-file-transfer">Non-blocking File Transfer</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.file.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NIOFileTransfer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">transferFile</span>(String sourcePath, String destPath) <span style="color:#66d9ef">throws</span> IOException {
+</span></span><span style="display:flex;"><span>        Path source <span style="color:#f92672">=</span> Paths.<span style="color:#a6e22e">get</span>(sourcePath);
+</span></span><span style="display:flex;"><span>        Path destination <span style="color:#f92672">=</span> Paths.<span style="color:#a6e22e">get</span>(destPath);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> (FileChannel sourceChannel <span style="color:#f92672">=</span> FileChannel.<span style="color:#a6e22e">open</span>(source, StandardOpenOption.<span style="color:#a6e22e">READ</span>);
+</span></span><span style="display:flex;"><span>             FileChannel destChannel <span style="color:#f92672">=</span> FileChannel.<span style="color:#a6e22e">open</span>(destination, 
+</span></span><span style="display:flex;"><span>                 StandardOpenOption.<span style="color:#a6e22e">CREATE</span>, StandardOpenOption.<span style="color:#a6e22e">WRITE</span>)) {
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(8192);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> transferred <span style="color:#f92672">=</span> 0;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">long</span> fileSize <span style="color:#f92672">=</span> sourceChannel.<span style="color:#a6e22e">size</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (transferred <span style="color:#f92672">&lt;</span> fileSize) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">int</span> bytesRead <span style="color:#f92672">=</span> sourceChannel.<span style="color:#a6e22e">read</span>(buffer);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">==</span> <span style="color:#f92672">-</span>1) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                destChannel.<span style="color:#a6e22e">write</span>(buffer);
+</span></span><span style="display:flex;"><span>                buffer.<span style="color:#a6e22e">clear</span>();
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                transferred <span style="color:#f92672">+=</span> bytesRead;
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Đã chuyển: &#34;</span> <span style="color:#f92672">+</span> (transferred <span style="color:#f92672">*</span> 100 <span style="color:#f92672">/</span> fileSize) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;%&#34;</span>);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Chuyển file hoàn tất!&#34;</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            transferFile(<span style="color:#e6db74">&#34;input.txt&#34;</span>, <span style="color:#e6db74">&#34;output.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="asynchronous-nio">Asynchronous NIO</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.IOException;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.InetSocketAddress;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.ByteBuffer;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.AsynchronousServerSocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.AsynchronousSocketChannel;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.channels.CompletionHandler;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.CountDownLatch;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncNIOServer</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        AsynchronousServerSocketChannel server <span style="color:#f92672">=</span> 
+</span></span><span style="display:flex;"><span>            AsynchronousServerSocketChannel.<span style="color:#a6e22e">open</span>();
+</span></span><span style="display:flex;"><span>        server.<span style="color:#a6e22e">bind</span>(<span style="color:#66d9ef">new</span> InetSocketAddress(8080));
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Async NIO Server đang chạy...&#34;</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        server.<span style="color:#a6e22e">accept</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">new</span> CompletionHandler<span style="color:#f92672">&lt;</span>AsynchronousSocketChannel, Void<span style="color:#f92672">&gt;</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">completed</span>(AsynchronousSocketChannel client, Void attachment) {
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Chấp nhận kết nối mới</span>
+</span></span><span style="display:flex;"><span>                server.<span style="color:#a6e22e">accept</span>(<span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">this</span>);
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Xử lý client</span>
+</span></span><span style="display:flex;"><span>                handleClient(client);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">failed</span>(Throwable exc, Void attachment) {
+</span></span><span style="display:flex;"><span>                exc.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Giữ server chạy</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">new</span> CountDownLatch(1).<span style="color:#a6e22e">await</span>();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleClient</span>(AsynchronousSocketChannel client) {
+</span></span><span style="display:flex;"><span>        ByteBuffer buffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">allocate</span>(1024);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        client.<span style="color:#a6e22e">read</span>(buffer, <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">new</span> CompletionHandler<span style="color:#f92672">&lt;</span>Integer, Void<span style="color:#f92672">&gt;</span>() {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">completed</span>(Integer bytesRead, Void attachment) {
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> (bytesRead <span style="color:#f92672">&gt;</span> 0) {
+</span></span><span style="display:flex;"><span>                    buffer.<span style="color:#a6e22e">flip</span>();
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> data <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[</span>buffer.<span style="color:#a6e22e">remaining</span>()<span style="color:#f92672">]</span>;
+</span></span><span style="display:flex;"><span>                    buffer.<span style="color:#a6e22e">get</span>(data);
+</span></span><span style="display:flex;"><span>                    String message <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String(data);
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận: &#34;</span> <span style="color:#f92672">+</span> message);
+</span></span><span style="display:flex;"><span>                    
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// Gửi phản hồi</span>
+</span></span><span style="display:flex;"><span>                    String response <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Async Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> message;
+</span></span><span style="display:flex;"><span>                    ByteBuffer responseBuffer <span style="color:#f92672">=</span> ByteBuffer.<span style="color:#a6e22e">wrap</span>(response.<span style="color:#a6e22e">getBytes</span>());
+</span></span><span style="display:flex;"><span>                    client.<span style="color:#a6e22e">write</span>(responseBuffer);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">@Override</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">failed</span>(Throwable exc, Void attachment) {
+</span></span><span style="display:flex;"><span>                exc.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Java NIO cung cấp một cách hiệu quả và scalable để xử lý I/O operations. Với khả năng non-blocking và asynchronous, NIO là lựa chọn tốt cho các ứng dụng mạng hiệu suất cao.</p></p>
+            <a href="/posts/java-nio-networking/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-01-25">25/1/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">HTTP Client</span>
+                
+                <span class="tag">REST API</span>
+                
+                <span class="tag">Network</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-http-client-tutorial/">Hướng Dẫn Sử Dụng HTTP Client trong Java 11&#43;</a>
+            </h2>
+            <p class="post-excerpt"><p>Java 11 đã giới thiệu HTTP Client API mới, thay thế cho HttpURLConnection cũ. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng HTTP Client API hiện đại này.</p>
+<h2 id="http-client-api-là-gì">HTTP Client API là gì?</h2>
+<p>HTTP Client API cung cấp một cách hiện đại và linh hoạt để thực hiện HTTP requests trong Java. Nó hỗ trợ HTTP/2, WebSocket và các tính năng async.</p>
+<h2 id="cú-pháp-cơ-bản">Cú pháp cơ bản</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpClient;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpRequest;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.HttpResponse;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BasicHttpClient</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://api.example.com/users&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Body: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="get-request">GET Request</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.time.Duration;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GetRequestExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">connectTimeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(10))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/1&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Accept&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">GET</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">==</span> 200) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Dữ liệu nhận được:&#34;</span>);
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="post-request-với-json">POST Request với JSON</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.nio.charset.StandardCharsets;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PostRequestExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        String jsonData <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            {
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;title&#34;: &#34;Bài viết mới&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;body&#34;: &#34;Nội dung bài viết&#34;,
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">                &#34;userId&#34;: 1
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            }
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Content-Type&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">POST</span>(HttpRequest.<span style="color:#a6e22e">BodyPublishers</span>.<span style="color:#a6e22e">ofString</span>(jsonData))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Response: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="async-http-requests">Async HTTP Requests</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.CompletableFuture;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncHttpExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Tạo nhiều requests đồng thời</span>
+</span></span><span style="display:flex;"><span>        CompletableFuture<span style="color:#f92672">&lt;</span>HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;&gt;</span> future1 <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">sendAsync</span>(
+</span></span><span style="display:flex;"><span>            HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/1&#34;</span>))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>(),
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        CompletableFuture<span style="color:#f92672">&lt;</span>HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;&gt;</span> future2 <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">sendAsync</span>(
+</span></span><span style="display:flex;"><span>            HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://jsonplaceholder.typicode.com/posts/2&#34;</span>))
+</span></span><span style="display:flex;"><span>                .<span style="color:#a6e22e">build</span>(),
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>()
+</span></span><span style="display:flex;"><span>        );
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Chờ tất cả requests hoàn thành</span>
+</span></span><span style="display:flex;"><span>        CompletableFuture.<span style="color:#a6e22e">allOf</span>(future1, future2).<span style="color:#a6e22e">join</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Post 1: &#34;</span> <span style="color:#f92672">+</span> future1.<span style="color:#a6e22e">get</span>().<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Post 2: &#34;</span> <span style="color:#f92672">+</span> future2.<span style="color:#a6e22e">get</span>().<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="xử-lý-lỗi-và-timeout">Xử lý lỗi và timeout</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.time.Duration;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.util.concurrent.TimeoutException;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ErrorHandlingExample</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">connectTimeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(5))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://httpstat.us/500&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">timeout</span>(Duration.<span style="color:#a6e22e">ofSeconds</span>(10))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>                HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">&gt;=</span> 200 <span style="color:#f92672">&amp;&amp;</span> response.<span style="color:#a6e22e">statusCode</span>() <span style="color:#f92672">&lt;</span> 300) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Thành công: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi HTTP: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (TimeoutException e) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Request timeout&#34;</span>);
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (Exception e) {
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">err</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Lỗi: &#34;</span> <span style="color:#f92672">+</span> e.<span style="color:#a6e22e">getMessage</span>());
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="authentication-với-bearer-token">Authentication với Bearer Token</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.http.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.URI;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AuthenticatedRequest</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) <span style="color:#66d9ef">throws</span> Exception {
+</span></span><span style="display:flex;"><span>        HttpClient client <span style="color:#f92672">=</span> HttpClient.<span style="color:#a6e22e">newHttpClient</span>();
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        String token <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;your-jwt-token-here&#34;</span>;
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        HttpRequest request <span style="color:#f92672">=</span> HttpRequest.<span style="color:#a6e22e">newBuilder</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">uri</span>(URI.<span style="color:#a6e22e">create</span>(<span style="color:#e6db74">&#34;https://api.example.com/protected-resource&#34;</span>))
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Authorization&#34;</span>, <span style="color:#e6db74">&#34;Bearer &#34;</span> <span style="color:#f92672">+</span> token)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">header</span>(<span style="color:#e6db74">&#34;Accept&#34;</span>, <span style="color:#e6db74">&#34;application/json&#34;</span>)
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">GET</span>()
+</span></span><span style="display:flex;"><span>            .<span style="color:#a6e22e">build</span>();
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        HttpResponse<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> response <span style="color:#f92672">=</span> client.<span style="color:#a6e22e">send</span>(request, 
+</span></span><span style="display:flex;"><span>            HttpResponse.<span style="color:#a6e22e">BodyHandlers</span>.<span style="color:#a6e22e">ofString</span>());
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Status: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">statusCode</span>());
+</span></span><span style="display:flex;"><span>        System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Response: &#34;</span> <span style="color:#f92672">+</span> response.<span style="color:#a6e22e">body</span>());
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>HTTP Client API trong Java 11+ cung cấp một cách hiện đại và mạnh mẽ để thực hiện HTTP requests. Với hỗ trợ async, HTTP/2 và các tính năng nâng cao, nó là lựa chọn tốt nhất cho việc phát triển ứng dụng mạng trong Java.</p></p>
+            <a href="/posts/java-http-client-tutorial/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+        <article class="post-card">
+            <div class="post-meta">
+                <time datetime="2024-01-15">15/1/2024</time>
+                
+                <span class="tag">Java</span>
+                
+                <span class="tag">Socket</span>
+                
+                <span class="tag">Network Programming</span>
+                
+            </div>
+            <h2 class="post-title">
+                <a href="/posts/java-socket-programming-basics/">Lập Trình Socket với Java - Cơ Bản</a>
+            </h2>
+            <p class="post-excerpt"><p>Lập trình socket là một trong những kỹ năng cơ bản nhất trong lập trình mạng. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Java để tạo các ứng dụng client-server đơn giản.</p>
+<h2 id="socket-là-gì">Socket là gì?</h2>
+<p>Socket là một endpoint của kết nối hai chiều giữa hai chương trình chạy trên mạng. Nó được xác định bởi địa chỉ IP và số port.</p>
+<h2 id="tạo-server-socket">Tạo Server Socket</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Server</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            ServerSocket serverSocket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket(8080);
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server đang chạy trên port 8080...&#34;</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> (<span style="color:#66d9ef">true</span>) {
+</span></span><span style="display:flex;"><span>                Socket clientSocket <span style="color:#f92672">=</span> serverSocket.<span style="color:#a6e22e">accept</span>();
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Client đã kết nối: &#34;</span> <span style="color:#f92672">+</span> clientSocket.<span style="color:#a6e22e">getInetAddress</span>());
+</span></span><span style="display:flex;"><span>                
+</span></span><span style="display:flex;"><span>                <span style="color:#75715e">// Xử lý client trong thread riêng</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> Thread(() <span style="color:#f92672">-&gt;</span> handleClient(clientSocket)).<span style="color:#a6e22e">start</span>();
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleClient</span>(Socket clientSocket) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            BufferedReader in <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader(
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> InputStreamReader(clientSocket.<span style="color:#a6e22e">getInputStream</span>())
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            PrintWriter out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter(
+</span></span><span style="display:flex;"><span>                clientSocket.<span style="color:#a6e22e">getOutputStream</span>(), <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            String inputLine;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> ((inputLine <span style="color:#f92672">=</span> in.<span style="color:#a6e22e">readLine</span>()) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) {
+</span></span><span style="display:flex;"><span>                System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Nhận từ client: &#34;</span> <span style="color:#f92672">+</span> inputLine);
+</span></span><span style="display:flex;"><span>                out.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> inputLine);
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="tạo-client-socket">Tạo Client Socket</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#f92672">import</span> java.io.*;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> java.net.*;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Client</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(String<span style="color:#f92672">[]</span> args) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span> {
+</span></span><span style="display:flex;"><span>            Socket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Socket(<span style="color:#e6db74">&#34;localhost&#34;</span>, 8080);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            BufferedReader in <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> BufferedReader(
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">new</span> InputStreamReader(socket.<span style="color:#a6e22e">getInputStream</span>())
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            PrintWriter out <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> PrintWriter(
+</span></span><span style="display:flex;"><span>                socket.<span style="color:#a6e22e">getOutputStream</span>(), <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>            );
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Gửi tin nhắn</span>
+</span></span><span style="display:flex;"><span>            out.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Xin chào server!&#34;</span>);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Nhận phản hồi</span>
+</span></span><span style="display:flex;"><span>            String response <span style="color:#f92672">=</span> in.<span style="color:#a6e22e">readLine</span>();
+</span></span><span style="display:flex;"><span>            System.<span style="color:#a6e22e">out</span>.<span style="color:#a6e22e">println</span>(<span style="color:#e6db74">&#34;Server phản hồi: &#34;</span> <span style="color:#f92672">+</span> response);
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span>            socket.<span style="color:#a6e22e">close</span>();
+</span></span><span style="display:flex;"><span>        } <span style="color:#66d9ef">catch</span> (IOException e) {
+</span></span><span style="display:flex;"><span>            e.<span style="color:#a6e22e">printStackTrace</span>();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="kết-luận">Kết luận</h2>
+<p>Lập trình socket với Java cho phép chúng ta tạo ra các ứng dụng mạng mạnh mẽ. Việc hiểu rõ cách hoạt động của socket sẽ giúp bạn phát triển các ứng dụng client-server hiệu quả.</p></p>
+            <a href="/posts/java-socket-programming-basics/" class="read-more">Đọc thêm →</a>
+        </article>
+        
+    </div>
+</div>
+
+    </main>
+    
+    <footer class="site-footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Network Programming Blog</h3>
+                <p>Blog cá nhân về lập trình mạng với Java &amp; JavaScript</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    
+                    <li><a href="/">Trang chủ</a></li>
+                    
+                    <li><a href="/posts/">Blog</a></li>
+                    
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p>Email: contact@example.com</p>
+                <p>GitHub: github.com/username</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Trương Vĩnh Phúc. Tất cả quyền được bảo lưu.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+{{ define "main" }}
+<div class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Chào mừng đến với Blog Lập Trình Mạng</h1>
+            <p class="hero-description">Khám phá thế giới lập trình mạng với Java & JavaScript. Chia sẻ kiến thức, kinh nghiệm và những dự án thú vị.</p>
+            <a href="/posts/" class="cta-button">Khám phá Blog</a>
+        </div>
+    </div>
+</div>
+
+        <div class="about-section">
+    <div class="container">
+        <div class="about-content">
+            <h2>Về Tôi</h2>
+            <div class="profile-info">
+                <div class="profile-image">
+                    <img src="{{ .Site.BaseURL }}images/profile.jpg?v={{ now.Unix }}" alt="Ảnh cá nhân của {{ .Site.Params.author }}" class="profile-photo">
+                </div>
+                <div class="profile-text">
+                    <p>Xin chào! Tôi là <strong>{{ .Site.Params.author }}</strong>, một lập trình viên đam mê về lập trình mạng và phát triển web.</p>
+                    <p>Với kinh nghiệm trong việc phát triển ứng dụng sử dụng Java và JavaScript, tôi mong muốn chia sẻ những kiến thức và kinh nghiệm của mình thông qua blog này.</p>
+                    <div class="skills">
+                        <h3>Kỹ năng chuyên môn:</h3>
+                        <ul>
+                            <li>Java Programming</li>
+                            <li>JavaScript & Node.js</li>
+                            <li>Network Programming</li>
+                            <li>Web Development</li>
+                            <li>Database Management</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="featured-posts">
+    <div class="container">
+        <h2>Bài viết nổi bật</h2>
+        <div class="posts-grid">
+            {{ range first 3 (where .Site.RegularPages "Section" "posts") }}
+            <article class="post-card">
+                <div class="post-meta">
+                    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2/1/2006" }}</time>
+                    {{ range .Params.tags }}
+                    <span class="tag">{{ . }}</span>
+                    {{ end }}
+                </div>
+                <h3 class="post-title">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h3>
+                <p class="post-excerpt">{{ .Summary }}</p>
+                <a href="{{ .RelPermalink }}" class="read-more">Đọc thêm →</a>
+            </article>
+            {{ end }}
+        </div>
+        <div class="view-all">
+            <a href="/posts/" class="view-all-button">Xem tất cả bài viết</a>
+        </div>
+    </div>
+</div>
+{{ end }}
