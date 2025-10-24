@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Comparison on Network Programming Blog</title>
-    <link>http://localhost:55875/network-programming-blog/tags/comparison/</link>
+    <link>http://localhost:1313/network-programming-blog/tags/comparison/</link>
     <description>Recent content in Comparison on Network Programming Blog</description>
     <generator>Hugo</generator>
     <language>vi</language>
     <lastBuildDate>Sat, 10 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:55875/network-programming-blog/tags/comparison/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/network-programming-blog/tags/comparison/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>So Sánh Axios và Fetch API trong JavaScript</title>
-      <link>http://localhost:55875/network-programming-blog/posts/javascript-axios-vs-fetch/</link>
+      <link>http://localhost:1313/network-programming-blog/posts/javascript-axios-vs-fetch/</link>
       <pubDate>Sat, 10 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:55875/network-programming-blog/posts/javascript-axios-vs-fetch/</guid>
+      <guid>http://localhost:1313/network-programming-blog/posts/javascript-axios-vs-fetch/</guid>
       <description>&lt;p&gt;Khi làm việc với HTTP requests trong JavaScript, chúng ta có hai lựa chọn chính: Axios và Fetch API. Trong bài viết này, chúng ta sẽ so sánh hai phương pháp này.&lt;/p&gt;&#xA;&lt;h2 id=&#34;fetch-api&#34;&gt;Fetch API&lt;/h2&gt;&#xA;&lt;p&gt;Fetch API là một API native của JavaScript, được hỗ trợ trong tất cả các trình duyệt hiện đại.&lt;/p&gt;&#xA;&lt;h3 id=&#34;ưu-điểm-của-fetch-api&#34;&gt;Ưu điểm của Fetch API&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Native&lt;/strong&gt;: Không cần cài đặt thư viện bên ngoài&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Promise-based&lt;/strong&gt;: Hỗ trợ async/await&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Lightweight&lt;/strong&gt;: Nhẹ và nhanh&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h3 id=&#34;nhược-điểm-của-fetch-api&#34;&gt;Nhược điểm của Fetch API&lt;/h3&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&lt;strong&gt;Không tự động parse JSON&lt;/strong&gt;: Cần gọi &lt;code&gt;.json()&lt;/code&gt; thủ công&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Không có request/response interceptors&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Không hỗ trợ timeout mặc định&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;li&gt;&lt;strong&gt;Không hỗ trợ request cancellation&lt;/strong&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;h2 id=&#34;axios&#34;&gt;Axios&lt;/h2&gt;&#xA;&lt;p&gt;Axios là một thư viện HTTP client phổ biến, cung cấp nhiều tính năng mạnh mẽ.&lt;/p&gt;</description>
     </item>
   </channel>

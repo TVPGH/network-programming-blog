@@ -2,120 +2,120 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:55875/network-programming-blog/tags/communication/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/communication/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/distributed-systems/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/distributed-systems/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/java-microservices-communication/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/java-microservices-communication/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/java/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/java/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/microservices/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/microservices/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/</loc>
+    <loc>http://localhost:1313/network-programming-blog/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/spring-cloud/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/spring-cloud/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/</loc>
     <lastmod>2024-02-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/backend/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/backend/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/express/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/express/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/javascript/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/javascript/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/node.js/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/node.js/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/rest-api/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/rest-api/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/javascript-nodejs-express-api/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/javascript-nodejs-express-api/</loc>
     <lastmod>2024-02-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/java-spring-webflux/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/java-spring-webflux/</loc>
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/non-blocking/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/non-blocking/</loc>
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/reactive/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/reactive/</loc>
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/spring/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/spring/</loc>
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/webflux/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/webflux/</loc>
     <lastmod>2024-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/axios/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/axios/</loc>
     <lastmod>2024-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/comparison/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/comparison/</loc>
     <lastmod>2024-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/fetch-api/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/fetch-api/</loc>
     <lastmod>2024-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/http/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/http/</loc>
     <lastmod>2024-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/javascript-axios-vs-fetch/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/javascript-axios-vs-fetch/</loc>
     <lastmod>2024-02-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/java-nio-networking/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/java-nio-networking/</loc>
     <lastmod>2024-02-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/network-programming/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/network-programming/</loc>
     <lastmod>2024-02-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/nio/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/nio/</loc>
     <lastmod>2024-02-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/javascript-websocket-programming/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/javascript-websocket-programming/</loc>
     <lastmod>2024-02-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/network/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/network/</loc>
     <lastmod>2024-02-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/real-time/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/real-time/</loc>
     <lastmod>2024-02-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/websocket/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/websocket/</loc>
     <lastmod>2024-02-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/http-client/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/http-client/</loc>
     <lastmod>2024-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/java-http-client-tutorial/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/java-http-client-tutorial/</loc>
     <lastmod>2024-01-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/async/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/async/</loc>
     <lastmod>2024-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/javascript-fetch-api-guide/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/javascript-fetch-api-guide/</loc>
     <lastmod>2024-01-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/posts/java-socket-programming-basics/</loc>
+    <loc>http://localhost:1313/network-programming-blog/posts/java-socket-programming-basics/</loc>
     <lastmod>2024-01-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/tags/socket/</loc>
+    <loc>http://localhost:1313/network-programming-blog/tags/socket/</loc>
     <lastmod>2024-01-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>http://localhost:55875/network-programming-blog/categories/</loc>
+    <loc>http://localhost:1313/network-programming-blog/categories/</loc>
   </url>
 </urlset>

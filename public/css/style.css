@@ -16,6 +16,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    overflow-x: hidden;
 }
 
 /* Header */
@@ -202,6 +203,8 @@ body {
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     transition: transform 0.2s, box-shadow 0.2s;
     border: 1px solid #e5e7eb;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .post-card:hover {
@@ -211,26 +214,122 @@ body {
 
 .post-meta {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     margin-bottom: 1rem;
     font-size: 0.9rem;
     color: #6b7280;
+    overflow: hidden;
+    word-wrap: break-word;
 }
 
 .tag {
     background: #667eea;
     color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 16px;
+    font-size: 0.75rem;
     font-weight: 500;
+    white-space: nowrap;
+    display: inline-block;
+    margin: 0.1rem 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Featured posts tags - shorter version */
+.featured-posts .tag {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+    border-radius: 12px;
+    max-width: 60px;
+    position: relative;
+}
+
+/* Tag abbreviations for featured posts */
+.featured-posts .tag[data-tag="JavaScript"]::before { content: "JS"; }
+.featured-posts .tag[data-tag="Node.js"]::before { content: "Node"; }
+.featured-posts .tag[data-tag="Express"]::before { content: "Exp"; }
+.featured-posts .tag[data-tag="Java"]::before { content: "Java"; }
+.featured-posts .tag[data-tag="Spring"]::before { content: "Spring"; }
+.featured-posts .tag[data-tag="WebFlux"]::before { content: "WF"; }
+.featured-posts .tag[data-tag="Reactive"]::before { content: "Rx"; }
+.featured-posts .tag[data-tag="Non-blocking"]::before { content: "NB"; }
+.featured-posts .tag[data-tag="REST API"]::before { content: "API"; }
+.featured-posts .tag[data-tag="Backend"]::before { content: "BE"; }
+.featured-posts .tag[data-tag="Fetch API"]::before { content: "Fetch"; }
+.featured-posts .tag[data-tag="HTTP"]::before { content: "HTTP"; }
+.featured-posts .tag[data-tag="Async"]::before { content: "Async"; }
+.featured-posts .tag[data-tag="WebSocket"]::before { content: "WS"; }
+.featured-posts .tag[data-tag="Real-time"]::before { content: "RT"; }
+.featured-posts .tag[data-tag="Network"]::before { content: "Net"; }
+.featured-posts .tag[data-tag="NIO"]::before { content: "NIO"; }
+.featured-posts .tag[data-tag="Network Programming"]::before { content: "NetProg"; }
+.featured-posts .tag[data-tag="Microservices"]::before { content: "MS"; }
+.featured-posts .tag[data-tag="Communication"]::before { content: "Comm"; }
+.featured-posts .tag[data-tag="Distributed Systems"]::before { content: "DS"; }
+
+/* Hide original text and show abbreviation */
+.featured-posts .tag {
+    font-size: 0;
+}
+
+.featured-posts .tag::before {
+    font-size: 0.7rem;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+/* Tooltip for full tag names */
+.featured-posts .tag {
+    position: relative;
+    cursor: help;
+}
+
+.featured-posts .tag::after {
+    content: attr(data-tag);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.featured-posts .tag:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Limit number of tags in featured posts */
+.featured-posts .post-meta {
+    max-height: 2.5rem;
+    overflow: hidden;
+}
+
+.featured-posts .tag:nth-child(n+4) {
+    display: none;
 }
 
 .post-title {
     font-size: 1.5rem;
     margin-bottom: 1rem;
     line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .post-title a {
@@ -247,6 +346,9 @@ body {
     color: #6b7280;
     margin-bottom: 1.5rem;
     line-height: 1.6;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .read-more {
@@ -540,5 +642,14 @@ body {
     
     .post {
         padding: 1rem 0;
+    }
+    
+    .post-meta {
+        gap: 0.5rem;
+    }
+    
+    .tag {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
     }
 }

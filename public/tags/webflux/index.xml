@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>WebFlux on Network Programming Blog</title>
-    <link>http://localhost:55875/network-programming-blog/tags/webflux/</link>
+    <link>http://localhost:1313/network-programming-blog/tags/webflux/</link>
     <description>Recent content in WebFlux on Network Programming Blog</description>
     <generator>Hugo</generator>
     <language>vi</language>
     <lastBuildDate>Thu, 15 Feb 2024 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:55875/network-programming-blog/tags/webflux/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/network-programming-blog/tags/webflux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Lập Trình Reactive với Spring WebFlux</title>
-      <link>http://localhost:55875/network-programming-blog/posts/java-spring-webflux/</link>
+      <link>http://localhost:1313/network-programming-blog/posts/java-spring-webflux/</link>
       <pubDate>Thu, 15 Feb 2024 00:00:00 +0000</pubDate>
-      <guid>http://localhost:55875/network-programming-blog/posts/java-spring-webflux/</guid>
+      <guid>http://localhost:1313/network-programming-blog/posts/java-spring-webflux/</guid>
       <description>&lt;p&gt;Spring WebFlux là một framework reactive cho việc xây dựng ứng dụng web non-blocking. Trong bài viết này, chúng ta sẽ tìm hiểu cách sử dụng Spring WebFlux.&lt;/p&gt;&#xA;&lt;h2 id=&#34;spring-webflux-là-gì&#34;&gt;Spring WebFlux là gì?&lt;/h2&gt;&#xA;&lt;p&gt;Spring WebFlux là một framework reactive được xây dựng trên Project Reactor, cho phép xây dựng ứng dụng web non-blocking và reactive.&lt;/p&gt;&#xA;&lt;h2 id=&#34;reactive-programming&#34;&gt;Reactive Programming&lt;/h2&gt;&#xA;&lt;p&gt;Reactive programming là một mô hình lập trình tập trung vào việc xử lý luồng dữ liệu bất đồng bộ và event-driven.&lt;/p&gt;</description>
     </item>
   </channel>
